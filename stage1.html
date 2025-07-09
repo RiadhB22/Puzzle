@@ -7,11 +7,11 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1 class="title">Stage 1 : Puzzle 4x4</h1>
+  <h1 class="title">Stage 1 : Puzzle 3x3</h1>
   <div id="puzzle-board" class="puzzle-board"></div>
   <div id="score-panel">Coups : <span id="moves">0</span></div>
   <div id="ad-space">
-    <img src="files/ad.jpg" alt="Publicité" />
+    <img src="files/ad.jpg" alt="PublicitÃ©" />
     <p>Visitez notre ferme bio !</p>
   </div>
 
@@ -19,7 +19,7 @@
     const board = document.getElementById("puzzle-board");
     const movesCounter = document.getElementById("moves");
     let moves = 0;
-    const gridSize = 4;
+    const gridSize = 3;
     const totalPieces = gridSize * gridSize;
     const pieces = Array.from({ length: totalPieces }, (_, i) => i);
     const correctOrder = [...pieces];
@@ -80,6 +80,7 @@
       const img = document.createElement("div");
       img.className = "full-image";
       img.style.backgroundImage = "url('files/cat.jpg')";
+      img.style.transform = "scale(1.2)";
       document.body.appendChild(img);
 
       setTimeout(() => {
@@ -87,7 +88,7 @@
       }, 100);
 
       setTimeout(() => {
-        alert("?? Bien complété ! Vous passez au Stage 2.");
+        alert("ðŸŽ‰ Bien complÃ©tÃ© ! Vous passez au Stage 2.");
         window.location.href = "stage2.html";
       }, 2200);
     }
