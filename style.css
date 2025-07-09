@@ -1,104 +1,85 @@
-/* style.css */
-
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 0;
-  background: linear-gradient(#f0f0f0, #e0e0e0);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  text-align: center;
+  color: #333;
 }
 
-h1.title {
+.home-container {
+  margin-top: 100px;
+}
+
+.title-3d {
   font-size: 3rem;
-  text-shadow: 2px 2px 4px #888;
-  margin-top: 2rem;
+  color: #333;
+  text-shadow: 2px 2px 0 #aaa, 4px 4px 0 #888;
+}
+
+form {
+  margin-top: 30px;
 }
 
 input[type="text"] {
-  padding: 0.5rem 1rem;
+  padding: 10px;
   font-size: 1rem;
-  margin-top: 1rem;
-  border-radius: 8px;
-  border: 1px solid #aaa;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 250px;
+  max-width: 80%;
 }
 
 button {
-  margin-top: 1rem;
-  padding: 0.5rem 1.5rem;
+  padding: 10px 20px;
   font-size: 1rem;
-  background-color: #4CAF50;
+  background-color: #2e86de;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #1b4f72;
 }
 
+/* Puzzle Stage */
 #puzzle-board {
   display: grid;
   grid-template-columns: repeat(4, 100px);
   grid-template-rows: repeat(4, 100px);
   gap: 2px;
   margin: 20px auto;
-  border: 2px solid #333;
-  position: relative;
-  transform: scale(1);
-  transition: transform 0.3s ease-in-out;
 }
 
 .piece {
   width: 100px;
   height: 100px;
   background-size: 400px 400px;
-  border-radius: 10% 40% 20% 30% / 30% 20% 40% 10%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 1px solid #aaa;
   cursor: pointer;
-  transition: transform 0.2s;
 }
 
-.piece:hover {
-  transform: scale(1.05);
+.piece.selected {
+  border: 2px solid red;
 }
 
 #score-panel {
-  margin-top: 10px;
   font-size: 1.2rem;
+  margin: 10px;
 }
 
 #ad-space {
-  margin-top: 30px;
-  background: #fff3cd;
-  border: 1px solid #ffeeba;
+  margin-top: 20px;
+  background: #fff9e6;
   padding: 10px;
-  width: 90%;
+  border: 1px solid #ffe58f;
   max-width: 400px;
-  text-align: center;
-  border-radius: 8px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #ad-space img {
   max-width: 100%;
-  height: auto;
-  border-radius: 6px;
-}
-
-.full-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 400px;
-  height: 400px;
-  background-image: url('cat.jpg');
-  background-size: cover;
-  z-index: 10;
-  transform: scale(1.2);
-  transition: all 0.6s ease;
-  border-radius: 12px;
-  display: none;
+  border-radius: 8px;
 }
