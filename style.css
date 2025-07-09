@@ -1,0 +1,104 @@
+/* style.css */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(#f0f0f0, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+h1.title {
+  font-size: 3rem;
+  text-shadow: 2px 2px 4px #888;
+  margin-top: 2rem;
+}
+
+input[type="text"] {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+#puzzle-board {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  grid-template-rows: repeat(4, 100px);
+  gap: 2px;
+  margin: 20px auto;
+  border: 2px solid #333;
+  position: relative;
+  transform: scale(1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.piece {
+  width: 100px;
+  height: 100px;
+  background-size: 400px 400px;
+  border-radius: 10% 40% 20% 30% / 30% 20% 40% 10%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.piece:hover {
+  transform: scale(1.05);
+}
+
+#score-panel {
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+#ad-space {
+  margin-top: 30px;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+#ad-space img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.full-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 400px;
+  background-image: url('cat.jpg');
+  background-size: cover;
+  z-index: 10;
+  transform: scale(1.2);
+  transition: all 0.6s ease;
+  border-radius: 12px;
+  display: none;
+}

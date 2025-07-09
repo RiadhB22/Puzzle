@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>?? Puzzle Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="home-container">
+    <h1 class="title-3d">?? PUZZLE GAME</h1>
+    <form id="start-form">
+      <label for="playerName">Entrez votre nom :</label><br>
+      <input type="text" id="playerName" placeholder="Votre nom" required>
+      <br><br>
+      <button type="submit">Commencer</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('start-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('playerName').value.trim();
+      if (name) {
+        localStorage.setItem('puzzlePlayerName', name);
+        window.location.href = 'stage1.html';
+      }
+    });
+  </script>
+</body>
+</html>
