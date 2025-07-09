@@ -21,29 +21,32 @@
     let moves = 0;
     const gridSize = 3;
     const totalPieces = gridSize * gridSize;
-    const pieces = Array.from({ length: totalPieces }, (_, i) => i);
-    const correctOrder = [...pieces];
-    pieces.sort(() => Math.random() - 0.5);
+    const pieceSize = 100; // taille d'un morceau
 
-    function createPiece(index, position) {
+    const positions = Array.from({ length: totalPieces }, (_, i) => i);
+    const shuffled = [...positions].sort(() => Math.random() - 0.5);
+
+    function createPiece(index, targetIndex) {
       const piece = document.createElement("div");
       piece.className = "piece";
+      piece.style.width = `${pieceSize}px`;
+      piece.style.height = `${pieceSize}px`;
       piece.style.backgroundImage = "url('files/cat.jpg')";
-      const size = 100;
-      const x = (position % gridSize) * -size;
-      const y = Math.floor(position / gridSize) * -size;
-      piece.style.backgroundPosition = `${x}px ${y}px`;
-      piece.dataset.index = index;
+      piece.style.backgroundSize = `${gridSize * pieceSize}px`;
+      piece.style.backgroundPosition = `-${(targetIndex % gridSize) * pieceSize}px -${Math.floor(targetIndex / gridSize) * pieceSize}px`;
+      piece.dataset.correct = targetIndex;
       board.appendChild(piece);
     }
 
-    pieces.forEach((pos, i) => createPiece(i, pos));
+    shuffled.forEach((targetIndex, i) => {
+      createPiece(i, targetIndex);
+    });
 
     let selected = null;
 
     board.addEventListener("click", (e) => {
       if (!e.target.classList.contains("piece")) return;
-      if (selected === null) {
+      if (!selected) {
         selected = e.target;
         selected.classList.add("selected");
       } else if (selected !== e.target) {
@@ -57,21 +60,20 @@
     });
 
     function swapPieces(a, b) {
-      const temp = a.style.backgroundPosition;
+      const tempPos = a.style.backgroundPosition;
       a.style.backgroundPosition = b.style.backgroundPosition;
-      b.style.backgroundPosition = temp;
+      b.style.backgroundPosition = tempPos;
     }
 
     function checkWin() {
-      const current = Array.from(board.children).map(p => p.style.backgroundPosition);
-      const win = [];
-      for (let i = 0; i < totalPieces; i++) {
-        const size = 100;
-        const x = (i % gridSize) * -size;
-        const y = Math.floor(i / gridSize) * -size;
-        win.push(`${x}px ${y}px`);
-      }
-      if (JSON.stringify(current) === JSON.stringify(win)) {
+      const pieces = Array.from(board.children);
+      const isCorrect = pieces.every((p, i) => {
+        const x = (p.dataset.correct % gridSize) * pieceSize;
+        const y = Math.floor(p.dataset.correct / gridSize) * pieceSize;
+        return p.style.backgroundPosition === `-${x}px -${y}px`;
+      });
+
+      if (isCorrect) {
         showCompletedImage();
       }
     }
