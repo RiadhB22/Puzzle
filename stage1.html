@@ -23,33 +23,10 @@
       text-shadow: 1px 1px 3px #aaa;
     }
 
-    .puzzle-board {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      display: flex;
-      flex-wrap: wrap;
-      border: 2px solid #ccc;
-      background-color: #fff;
-    }
-
-    .piece {
-      width: 100px;
-      height: 100px;
-      background-size: 300px 300px;
-      position: relative;
-      clip-path: url(#puzzle-clip);
-      transition: transform 0.2s, filter 0.2s;
-    }
-
-    .piece:hover {
-      transform: scale(1.05);
-      filter: brightness(1.2);
-      z-index: 10;
-    }
-
-    .selected {
-      outline: 2px solid red;
+    #puzzle-container {
+      width: 320px;
+      height: 320px;
+      margin: auto;
     }
 
     #score-panel {
@@ -60,119 +37,39 @@
       margin-top: 2em;
       text-align: center;
     }
-
-    .full-image {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 300px;
-      height: 300px;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      transform: translate(-50%, -50%) scale(1);
-      transition: transform 1s ease;
-      z-index: 1000;
-    }
-
-    .full-image.show {
-      transform: translate(-50%, -50%) scale(1.2);
-    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/jigsaw-puzzle-js@latest/dist/jigsaw.min.js"></script>
 </head>
 <body>
   <h1 class="title">Stage 1 : Puzzle 3x3</h1>
-  <svg width="0" height="0">
-    <defs>
-      <clipPath id="puzzle-clip" clipPathUnits="objectBoundingBox">
-        <path d="M0.1,0 C0.2,0.05,0.8,0.05,0.9,0 C0.95,0.2,0.95,0.8,0.9,0.9 C0.8,0.95,0.2,0.95,0.1,0.9 C0.05,0.8,0.05,0.2,0.1,0 Z" />
-      </clipPath>
-    </defs>
-  </svg>
 
-  <div id="puzzle-board" class="puzzle-board"></div>
-  <div id="score-panel">Coups : <span id="moves">0</span></div>
+  <div id="puzzle-container"></div>
+  <div id="score-panel">Temps écoulé : <span id="timer">0</span> sec</div>
   <div id="ad-space">
     <img src="files/ad.jpg" alt="Publicité" width="200" />
     <p>Visitez notre ferme bio !</p>
   </div>
 
   <script>
-    const board = document.getElementById("puzzle-board");
-    const movesCounter = document.getElementById("moves");
-    let moves = 0;
-    const gridSize = 3;
-    const totalPieces = gridSize * gridSize;
-    const pieces = Array.from({ length: totalPieces }, (_, i) => i);
-    const correctOrder = [...pieces];
-    pieces.sort(() => Math.random() - 0.5);
+    const timerEl = document.getElementById("timer");
+    let seconds = 0;
+    setInterval(() => {
+      seconds++;
+      timerEl.textContent = seconds;
+    }, 1000);
 
-    function createPiece(index, position) {
-      const piece = document.createElement("div");
-      piece.className = "piece";
-      piece.style.backgroundImage = "url('files/cat.jpg')";
-      const size = 100;
-      const x = (position % gridSize) * -size;
-      const y = Math.floor(position / gridSize) * -size;
-      piece.style.backgroundPosition = `${x}px ${y}px`;
-      piece.dataset.index = index;
-      board.appendChild(piece);
-    }
-
-    pieces.forEach((pos, i) => createPiece(i, pos));
-
-    let selected = null;
-
-    board.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("piece")) return;
-      if (selected === null) {
-        selected = e.target;
-        selected.classList.add("selected");
-      } else if (selected !== e.target) {
-        swapPieces(selected, e.target);
-        selected.classList.remove("selected");
-        selected = null;
-        moves++;
-        movesCounter.textContent = moves;
-        checkWin();
-      }
+    const puzzle = new JigsawPuzzle("puzzle-container", {
+      image: "files/cat.jpg",
+      rows: 3,
+      columns: 3,
+      style: 'classic',
+      onComplete: () => {
+        setTimeout(() => {
+          alert("🎉 Bien complété ! Vous passez au Stage 2.");
+          window.location.href = "stage2.html";
+        }, 500);
+      },
     });
-
-    function swapPieces(a, b) {
-      const temp = a.style.backgroundPosition;
-      a.style.backgroundPosition = b.style.backgroundPosition;
-      b.style.backgroundPosition = temp;
-    }
-
-    function checkWin() {
-      const current = Array.from(board.children).map(p => p.style.backgroundPosition);
-      const win = [];
-      for (let i = 0; i < totalPieces; i++) {
-        const size = 100;
-        const x = (i % gridSize) * -size;
-        const y = Math.floor(i / gridSize) * -size;
-        win.push(`${x}px ${y}px`);
-      }
-      if (JSON.stringify(current) === JSON.stringify(win)) {
-        showCompletedImage();
-      }
-    }
-
-    function showCompletedImage() {
-      const img = document.createElement("div");
-      img.className = "full-image";
-      img.style.backgroundImage = "url('files/cat.jpg')";
-      document.body.appendChild(img);
-
-      setTimeout(() => {
-        img.classList.add("show");
-      }, 100);
-
-      setTimeout(() => {
-        alert("🎉 Bien complété ! Vous passez au Stage 2.");
-        window.location.href = "stage2.html";
-      }, 2200);
-    }
   </script>
 </body>
 </html>
