@@ -1,133 +1,103 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Puzzle Game</title>
-  <link rel="stylesheet" href="style.css" />
-<script src="https://cdn.jsdelivr.net/npm/jigsaw-puzzle-js@1.1.1/dist/jigsaw.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Puzzle Game</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  body { margin:0; font-family:Arial,sans-serif; text-align:center; background:#f5f5f5; }
+  .title { margin:1em; font-size:2em; }
+  #player-form, #player-info, #score-panel, #puzzle-board, #next-button, #ad-space { margin:1em auto; }
+  #puzzle-board { display:grid; grid-template:repeat(3,100px)/repeat(3,100px); gap:2px; width:306px; }
+  .piece { width:100px; height:100px; background-size:300px 300px; cursor:pointer; border:1px solid #ccc; }
+  .selected { outline:3px solid #4CAF50; }
+  #next-button, #start-button { padding:0.5em 1em; font-size:1em; cursor:pointer; background:#4CAF50; color:#fff; border:none; border-radius:5px; }
+  #ad-space img { width:200px; }
+</style>
 </head>
 <body>
   <h1 class="title">🧩 PUZZLE GAME</h1>
-
   <div id="player-form">
-    <input type="text" id="player-name" placeholder="Entrez votre nom" />
+    <input id="player-name" placeholder="Entrez votre nom" />
     <button id="start-button">Commencer</button>
   </div>
-
   <div id="player-info" style="display:none;"></div>
-  <div id="puzzle-container"></div>
-  <div id="score-panel" style="display:none;">⏱ Temps écoulé : <span id="timer">0</span> sec</div>
+  <div id="score-panel" style="display:none;">⏱ Temps : <span id="timer">0</span>s | Coups : <span id="moves">0</span></div>
+  <div id="puzzle-board"></div>
+  <button id="next-button" style="display:none;">➡ Rejouer</button>
+  <div id="ad-space"><img src="Files/ad.jpg" alt="Pub" /><p>Visitez notre ferme bio !</p></div>
 
-  <button id="next-button" style="display:none;">➡ Niveau suivant</button>
+<script>
+  let moves=0, seconds=0, timerInterval;
+  const gridSize=3, pieceSize=100;
+  const board = document.getElementById('puzzle-board');
 
-  <div id="ad-space">
-    <img src="Files/ad.jpg" alt="Publicité" />
-    <p>Visitez notre ferme bio !</p>
-  </div>
+  document.getElementById('start-button').onclick = () => {
+    const name = document.getElementById('player-name').value.trim() || "Joueur";
+    document.getElementById('player-form').style.display='none';
+    document.getElementById('player-info').textContent=`👤 ${name}`; document.getElementById('player-info').style.display='block';
+    document.getElementById('score-panel').style.display='block';
+    timerInterval = setInterval(() => { seconds++; document.getElementById('timer').textContent=seconds; },1000);
+    initBoard();
+  };
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: linear-gradient(to right, #f0f0f0, #ffffff);
-    }
-
-    .title {
-      font-size: 2.5em;
-      margin: 1em 0 0.5em;
-      color: #222;
-    }
-
-    #player-form {
-      margin-bottom: 1em;
-    }
-
-    #player-name {
-      padding: 0.5em;
-      font-size: 1em;
-      border-radius: 8px;
-      width: 200px;
-      text-align: center;
-    }
-
-    #start-button, #next-button {
-      margin-top: 0.5em;
-      padding: 0.5em 1em;
-      font-size: 1em;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-
-    #puzzle-container {
-      width: 360px;
-      height: 360px;
-      margin: 1em auto;
-      border: 4px solid #ccc;
-      border-radius: 16px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
-    }
-
-    #ad-space {
-      margin-top: 2em;
-      text-align: center;
-      background: #fff;
-      padding: 1em;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    #ad-space img {
-      width: 200px;
-      border-radius: 8px;
-    }
-  </style>
-
-  <script>
-    let timerInterval;
-    let seconds = 0;
-
-    document.getElementById("start-button").addEventListener("click", () => {
-      const nameInput = document.getElementById("player-name");
-      const name = nameInput.value.trim() || "Joueur";
-
-      document.getElementById("player-form").style.display = "none";
-      document.getElementById("player-info").textContent = `👤 Joueur : ${name}`;
-      document.getElementById("player-info").style.display = "block";
-      document.getElementById("score-panel").style.display = "block";
-
-      timerInterval = setInterval(() => {
-        seconds++;
-        document.getElementById("timer").textContent = seconds;
-      }, 1000);
-
-      const puzzle = new JigsawPuzzle("puzzle-container", {
-        image: "Files/cat.jpg",
-        rows: 3,
-        columns: 3,
-        style: "classic",
-        onComplete: () => {
-          clearInterval(timerInterval);
-          const container = document.getElementById("puzzle-container");
-          container.style.transition = "transform 0.6s ease";
-          container.style.transform = "scale(1.2)";
-          setTimeout(() => {
-            alert("🎉 Bien complété ! Cliquez sur Niveau suivant pour continuer.");
-            document.getElementById("next-button").style.display = "inline-block";
-          }, 1000);
-        }
-      });
+  function initBoard(){
+    moves=0; seconds=0;
+    document.getElementById('moves').textContent=0;
+    board.innerHTML='';
+    const positions=[...Array(gridSize*gridSize).keys()].sort(()=>Math.random()-0.5);
+    positions.forEach((pos,i)=> {
+      const piece = document.createElement('div');
+      piece.className='piece';
+      const x = (pos%gridSize)*-pieceSize;
+      const y = Math.floor(pos/gridSize)*-pieceSize;
+      piece.style.backgroundImage="url('Files/cat.jpg')";
+      piece.style.backgroundPosition=`${x}px ${y}px`;
+      piece.dataset.pos = pos;
+      piece.onclick = () => handleClick(piece);
+      board.appendChild(piece);
     });
+  }
 
-    document.getElementById("next-button").addEventListener("click", () => {
-      location.reload(); // recharge le même niveau
+  let selected=null;
+  function handleClick(piece){
+    if(selected===null){ selected=piece; piece.classList.add('selected'); }
+    else if(selected!==piece){
+      const tmp=selected.style.backgroundPosition;
+      selected.style.backgroundPosition = piece.style.backgroundPosition;
+      piece.style.backgroundPosition = tmp;
+      selected.classList.remove('selected');
+      selected=null;
+      moves++; document.getElementById('moves').textContent=moves;
+      checkWin();
+    }
+  }
+
+  function checkWin(){
+    const ok = [...board.children].every((p,i)=>{
+      const x = (i%gridSize)*-pieceSize;
+      const y = Math.floor(i/gridSize)*-pieceSize;
+      return p.style.backgroundPosition === `${x}px ${y}px`;
     });
-  </script>
+    if(ok){ clearInterval(timerInterval); setTimeout(win,200); }
+  }
+
+  function win(){
+    board.style.transform='scale(1.2)';
+    setTimeout(()=>{
+      alert('🎉 Bien joué !');
+      document.getElementById('next-button').style.display='inline-block';
+    },500);
+  }
+
+  document.getElementById('next-button').onclick = () => {
+    board.style.transform='scale(1)';
+    document.getElementById('next-button').style.display='none';
+    initBoard();
+    seconds=0; moves=0; document.getElementById('timer').textContent=0;
+    timerInterval = setInterval(() => { seconds++; document.getElementById('timer').textContent=seconds; },1000);
+  };
+</script>
 </body>
 </html>
