@@ -1,28 +1,128 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>🎯 Puzzle Game</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Puzzle Game : TAKWEEN</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: linear-gradient(to right, #f0f0f0, #ffffff);
+    }
+
+    h1.title {
+      font-size: 3em;
+      margin: 1em 0 0.5em;
+      color: #222;
+      text-shadow: 1px 1px 5px #aaa;
+    }
+
+    #player-info {
+      margin-bottom: 1em;
+      font-size: 1.2em;
+      color: #555;
+    }
+
+    #puzzle-container {
+      width: 360px;
+      height: 360px;
+      margin: 1em auto;
+      border: 4px solid #ccc;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      background-color: #fff;
+    }
+
+    #score-panel {
+      font-size: 1.1em;
+      margin: 1em 0;
+      color: #333;
+    }
+
+    #next-button {
+      padding: 0.6em 1.2em;
+      font-size: 1em;
+      margin-top: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+
+    #next-button:hover {
+      background-color: #45a049;
+    }
+
+    #ad-space {
+      margin-top: 2em;
+      text-align: center;
+      background: #fff;
+      padding: 1em;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    #ad-space img {
+      width: 200px;
+      border-radius: 8px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/jigsaw-puzzle-js@latest/dist/jigsaw.min.js"></script>
 </head>
 <body>
-  <div class="home-container">
-    <h1 class="title-3d">🧩 PUZZLE GAME</h1>
-    <form id="start-form">
-      <label for="playerName">Entrez votre nom :</label><br>
-      <input type="text" id="playerName" placeholder="Votre nom" required>
-      <br><br>
-      <button type="submit">Commencer</button>
-    </form>
+  <h1 class="title">🧩 PUZZLE GAME : TAKWEEN</h1>
+
+  <div id="player-info"></div>
+  <div id="puzzle-container"></div>
+  <div id="score-panel">⏱ Temps écoulé : <span id="timer">0</span> sec</div>
+
+  <button id="next-button">➡ Niveau suivant</button>
+
+  <div id="ad-space">
+    <img src="Files/ad.jpg" alt="Publicité" />
+    <p>Visitez notre ferme bio !</p>
   </div>
 
   <script>
-    document.getElementById('start-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name = document.getElementById('playerName').value.trim();
-      if (name) {
-        localStorage.setItem('puzzlePlayerName', name);
-        window.location.href = 'stage1.html';
+    const playerName = prompt("Bienvenue ! Entrez votre nom pour commencer :") || "Joueur";
+    document.getElementById("player-info").textContent = `👤 Joueur : ${playerName}`;
+
+    const timerEl = document.getElementById("timer");
+    let seconds = 0;
+    const timerInterval = setInterval(() => {
+      seconds++;
+      timerEl.textContent = seconds;
+    }, 1000);
+
+    const nextButton = document.getElementById("next-button");
+    nextButton.addEventListener("click", () => {
+      window.location.href = "stage2.html";
+    });
+
+    const puzzle = new JigsawPuzzle("puzzle-container", {
+      image: "Files/cat.jpg",
+      rows: 3,
+      columns: 3,
+      style: 'classic',
+      onComplete: () => {
+        clearInterval(timerInterval);
+        const container = document.getElementById("puzzle-container");
+        container.style.transition = "transform 0.6s ease";
+        container.style.transform = "scale(1.2)";
+
+        setTimeout(() => {
+          alert("🎉 Bien complété ! Cliquez sur Niveau suivant pour continuer.");
+          nextButton.style.display = "inline-block";
+        }, 1000);
       }
     });
   </script>
