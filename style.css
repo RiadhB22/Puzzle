@@ -1,93 +1,13 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to right, #e0eafc, #cfdef3);
-  text-align: center;
-  color: #333;
+h1.title {
+  font-size: 2.4em;
+  margin: 0.5em 0;
+  line-height: 1.2em;
+  color: #222;
+  text-shadow: 1px 1px 5px #aaa;
 }
 
-.home-container {
-  margin-top: 100px;
-}
-
-.title-3d {
-  font-size: 3rem;
-  color: #333;
-  text-shadow: 2px 2px 0 #aaa, 4px 4px 0 #888;
-}
-
-form {
-  margin-top: 30px;
-}
-
-input[type="text"] {
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 250px;
-  max-width: 80%;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #2e86de;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #1b4f72;
-}
-
-/* Puzzle Stage */
-#puzzle-board {
-  display: grid;
-  grid-template-columns: repeat(4, 100px);
-  grid-template-rows: repeat(4, 100px);
-  gap: 2px;
-  margin: 20px auto;
-}
-
-.piece {
-  width: 100px;
-  height: 100px;
-  background-size: 300px 300px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.piece:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-}
-
-
-.piece.selected {
-  border: 2px solid red;
-}
-
-#score-panel {
-  font-size: 1.2rem;
-  margin: 10px;
-}
-
-#ad-space {
-  margin-top: 20px;
-  background: #fff9e6;
-  padding: 10px;
-  border: 1px solid #ffe58f;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#ad-space img {
-  max-width: 100%;
-  border-radius: 8px;
+#ad-space h3 {
+  margin-bottom: 0.5em;
+  color: #555;
+  font-weight: bold;
 }
