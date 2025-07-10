@@ -55,10 +55,18 @@ button:hover {
 .piece {
   width: 100px;
   height: 100px;
-  background-size: 400px 400px;
-  border: 1px solid #aaa;
+  background-size: 300px 300px;
   cursor: pointer;
+  border: 1px solid #ccc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.piece:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
 
 .piece.selected {
   border: 2px solid red;
