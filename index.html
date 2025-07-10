@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Puzzle Game : TAKWEEN</title>
+  <title>Puzzle Game</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
@@ -24,10 +24,38 @@
       text-shadow: 1px 1px 5px #aaa;
     }
 
+    #player-form {
+      margin-bottom: 1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #player-name {
+      padding: 0.4em;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 200px;
+      text-align: center;
+    }
+
+    #start-button {
+      margin-top: 0.5em;
+      padding: 0.5em 1em;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
     #player-info {
       margin-bottom: 1em;
       font-size: 1.2em;
       color: #555;
+      display: none;
     }
 
     #puzzle-container {
@@ -44,6 +72,7 @@
       font-size: 1.1em;
       margin: 1em 0;
       color: #333;
+      display: none;
     }
 
     #next-button {
@@ -79,7 +108,12 @@
   <script src="https://cdn.jsdelivr.net/npm/jigsaw-puzzle-js@latest/dist/jigsaw.min.js"></script>
 </head>
 <body>
-  <h1 class="title">🧩 PUZZLE GAME : TAKWEEN</h1>
+  <h1 class="title">🧩 PUZZLE GAME</h1>
+
+  <div id="player-form">
+    <input type="text" id="player-name" placeholder="Entrez votre nom" />
+    <button id="start-button">Commencer</button>
+  </div>
 
   <div id="player-info"></div>
   <div id="puzzle-container"></div>
@@ -93,37 +127,62 @@
   </div>
 
   <script>
-    const playerName = prompt("Bienvenue ! Entrez votre nom pour commencer :") || "Joueur";
-    document.getElementById("player-info").textContent = `👤 Joueur : ${playerName}`;
-
-    const timerEl = document.getElementById("timer");
+    let timerInterval;
     let seconds = 0;
-    const timerInterval = setInterval(() => {
-      seconds++;
-      timerEl.textContent = seconds;
-    }, 1000);
+    let stage = 1;
 
-    const nextButton = document.getElementById("next-button");
-    nextButton.addEventListener("click", () => {
-      window.location.href = "stage2.html";
+    const images = {
+      1: { src: 'Files/cat.jpg', rows: 3, cols: 3 },
+      2: { src: 'Files/cat2.jpg', rows: 4, cols: 4 },
+      3: { src: 'Files/cat3.jpg', rows: 5, cols: 5 },
+    };
+
+    function startStage(stageNum) {
+      const config = images[stageNum];
+      const puzzle = new JigsawPuzzle("puzzle-container", {
+        image: config.src,
+        rows: config.rows,
+        columns: config.cols,
+        style: 'classic',
+        onComplete: () => {
+          clearInterval(timerInterval);
+          const container = document.getElementById("puzzle-container");
+          container.style.transition = "transform 0.6s ease";
+          container.style.transform = "scale(1.2)";
+
+          setTimeout(() => {
+            alert("🎉 Bien complété ! Cliquez sur Niveau suivant pour continuer.");
+            document.getElementById("next-button").style.display = "inline-block";
+          }, 1000);
+        }
+      });
+    }
+
+    document.getElementById("start-button").addEventListener("click", () => {
+      const nameInput = document.getElementById("player-name");
+      const name = nameInput.value.trim() || "Joueur";
+
+      document.getElementById("player-form").style.display = "none";
+      document.getElementById("player-info").textContent = `👤 Joueur : ${name}`;
+      document.getElementById("player-info").style.display = "block";
+      document.getElementById("score-panel").style.display = "block";
+
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById("timer").textContent = seconds;
+      }, 1000);
+
+      startStage(stage);
     });
 
-    const puzzle = new JigsawPuzzle("puzzle-container", {
-      image: "Files/cat.jpg",
-      rows: 3,
-      columns: 3,
-      style: 'classic',
-      onComplete: () => {
-        clearInterval(timerInterval);
-        const container = document.getElementById("puzzle-container");
-        container.style.transition = "transform 0.6s ease";
-        container.style.transform = "scale(1.2)";
-
-        setTimeout(() => {
-          alert("🎉 Bien complété ! Cliquez sur Niveau suivant pour continuer.");
-          nextButton.style.display = "inline-block";
-        }, 1000);
-      }
+    document.getElementById("next-button").addEventListener("click", () => {
+      stage++;
+      if (!images[stage]) stage = 1;
+      seconds = 0;
+      document.getElementById("timer").textContent = 0;
+      document.getElementById("next-button").style.display = "none";
+      document.getElementById("puzzle-container").innerHTML = "";
+      startStage(stage);
     });
   </script>
 </body>
