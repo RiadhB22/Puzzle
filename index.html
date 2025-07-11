@@ -28,7 +28,7 @@
 
   <div id="ad-space">
     <h3>Publicité</h3>
-    <img src="Files/PUB.png" alt="Publicité" style="width: 100%; max-width: 200px;">
+    <img src="Files/PUB.png" alt="Publicité" style="width: 100%; max-width: 300px;">
   </div>
 
   <script>
@@ -44,6 +44,7 @@
     let score = 0;
     let firstTile = null;
     let correctOrder = [];
+    let gameFinished = false;
 
     function shuffleTiles() {
       correctOrder = Array.from({length: 9}, (_, i) => i);
@@ -66,9 +67,11 @@
         tile.addEventListener("click", handleTileClick);
         puzzleContainer.appendChild(tile);
       }
+      gameFinished = false;
     }
 
     function handleTileClick(e) {
+      if (gameFinished) return;
       const clicked = e.target;
       if (!firstTile) {
         firstTile = clicked;
@@ -104,7 +107,16 @@
         if (pos !== i) correct = false;
       }
       if (correct) {
+        gameFinished = true;
         clearInterval(timer);
+        puzzleContainer.classList.add("flip-complete");
+        setTimeout(() => {
+          puzzleContainer.classList.remove("flip-complete");
+          puzzleContainer.classList.add("show-stars");
+          setTimeout(() => {
+            puzzleContainer.classList.remove("show-stars");
+          }, 2000);
+        }, 1000);
         replayButton.style.display = "inline-block";
         level2Button.style.display = "inline-block";
       }
