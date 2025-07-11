@@ -1,121 +1,135 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Puzzle Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1 class="title">🧩 PUZZLE GAME</h1>
+  <h1 class="title">🧩 Puzzle Game</h1>
 
   <div id="player-form">
-    <input type="text" id="player-name" placeholder="Entrez votre nom" />
+    <input type="text" id="player-name" placeholder="Entrez votre nom">
     <button id="start-button">Commencer</button>
   </div>
 
   <div id="player-info"></div>
-  <div id="stage-info"></div>
-  <div id="puzzle-container"></div>
-  <div id="score-panel">⏱ Temps : <span id="timer">0</span>s | Score : <span id="score">0</span></div>
+  <div id="stage-info">Niveau 1</div>
+  <div id="score-panel">Score : <span id="score">0</span></div>
 
-  <button id="next-button">➡ Niveau suivant</button>
+  <div id="puzzle-container"></div>
+
+  <div>
+    <button id="replay-button">🔁 Rejouer</button>
+    <button id="level2-button">➡️ Niveau 2</button>
+  </div>
 
   <div id="ad-space">
     <h3>Publicité</h3>
-    <img src="Files/PUB.png" alt="Publicité" />
+    <img src="Files/PUB.png" alt="Publicité">
   </div>
 
   <script>
-    let seconds = 0;
+    const playerNameInput = document.getElementById("player-name");
+    const startButton = document.getElementById("start-button");
+    const playerInfo = document.getElementById("player-info");
+    const puzzleContainer = document.getElementById("puzzle-container");
+    const scoreSpan = document.getElementById("score");
+    const replayButton = document.getElementById("replay-button");
+    const level2Button = document.getElementById("level2-button");
+
+    let tiles = [];
     let score = 0;
-    let interval;
-    const correctOrder = [...Array(9).keys()];
-    let currentOrder = [];
 
-    document.getElementById("start-button").addEventListener("click", () => {
-      const name = document.getElementById("player-name").value.trim() || "Joueur";
-      document.getElementById("player-form").style.display = "none";
-      document.getElementById("player-info").textContent = `👤 Joueur : ${name}`;
-      document.getElementById("stage-info").textContent = `📌 Stage 1`;
-
-      startTimer();
-      createPuzzle();
-    });
-
-    function startTimer() {
-      interval = setInterval(() => {
-        seconds++;
-        document.getElementById("timer").textContent = seconds;
-      }, 1000);
+    function shuffleTiles() {
+      const indexes = Array.from({length: 9}, (_, i) => i);
+      indexes.sort(() => Math.random() - 0.5);
+      return indexes;
     }
 
-    function createPuzzle() {
-      const container = document.getElementById("puzzle-container");
-      container.innerHTML = "";
-      currentOrder = [...correctOrder].sort(() => Math.random() - 0.5);
-
-      currentOrder.forEach(i => {
+    function renderPuzzle() {
+      puzzleContainer.innerHTML = "";
+      const order = shuffleTiles();
+      for (let i = 0; i < 9; i++) {
         const tile = document.createElement("div");
-        tile.classList.add("tile");
-        const row = Math.floor(i / 3);
-        const col = i % 3;
-        tile.style.backgroundPosition = `-${col * 120}px -${row * 120}px`;
-        tile.setAttribute("data-index", i);
-        tile.addEventListener("click", handleTileClick);
-        container.appendChild(tile);
-      });
-    }
-
-    let firstTile = null;
-    function handleTileClick(e) {
-      const clickedTile = e.target;
-      if (!firstTile) {
-        firstTile = clickedTile;
-        clickedTile.style.border = "2px solid green";
-      } else {
-        if (clickedTile === firstTile) {
-          firstTile.style.border = "none";
-          firstTile = null;
-          return;
-        }
-        swapTiles(firstTile, clickedTile);
-        firstTile.style.border = "none";
-        firstTile = null;
-        checkVictory();
+        tile.className = "tile";
+        tile.style.backgroundPosition = `-${(order[i] % 3) * 120}px -${Math.floor(order[i] / 3) * 120}px`;
+        tile.dataset.order = order[i];
+        tile.draggable = true;
+        tile.addEventListener("dragstart", dragStart);
+        tile.addEventListener("dragover", dragOver);
+        tile.addEventListener("drop", dropTile);
+        puzzleContainer.appendChild(tile);
       }
     }
 
-    function swapTiles(tile1, tile2) {
-      const tempPos = tile1.style.backgroundPosition;
-      tile1.style.backgroundPosition = tile2.style.backgroundPosition;
-      tile2.style.backgroundPosition = tempPos;
+    let dragged = null;
 
-      score -= 1;
-      document.getElementById("score").textContent = score;
+    function dragStart(e) {
+      dragged = e.target;
     }
 
-    function checkVictory() {
-      const tiles = document.querySelectorAll(".tile");
-      let won = true;
-      tiles.forEach((tile, index) => {
-        const expectedRow = Math.floor(index / 3);
-        const expectedCol = index % 3;
-        const expectedPos = `-${expectedCol * 120}px -${expectedRow * 120}px`;
-        if (tile.style.backgroundPosition !== expectedPos) {
-          won = false;
-        }
-      });
-      if (won) {
-        clearInterval(interval);
-        document.getElementById("next-button").style.display = "inline-block";
-        const container = document.getElementById("puzzle-container");
-        container.style.transform = "scale(1.2)";
-        setTimeout(() => {
-          alert("Bravo ! Vous avez complété le puzzle. Passons au stage 2.");
-          container.style.transform = "scale(1.0)";
-        }, 1000);
+    function dragOver(e) {
+      e.preventDefault();
+    }
+
+    function dropTile(e) {
+      e.preventDefault();
+      if (dragged && dragged !== e.target) {
+        let tmp = document.createElement("div");
+        puzzleContainer.insertBefore(tmp, dragged);
+        puzzleContainer.insertBefore(dragged, e.target);
+        puzzleContainer.insertBefore(e.target, tmp);
+        puzzleContainer.removeChild(tmp);
+        checkWin();
       }
+    }
+
+    function checkWin() {
+      const tiles = puzzleContainer.children;
+      let correct = true;
+      for (let i = 0; i < tiles.length; i++) {
+        const pos = parseInt(tiles[i].dataset.order);
+        if (pos !== i) correct = false;
+      }
+      if (correct) {
+        puzzleContainer.style.transform = "scale(1.2)";
+        clearInterval(timer);
+        replayButton.style.display = "inline-block";
+        level2Button.style.display = "inline-block";
+      }
+    }
+
+    startButton.onclick = () => {
+      const name = playerNameInput.value.trim();
+      if (name) {
+        playerInfo.textContent = `👤 ${name}`;
+        renderPuzzle();
+        score = 0;
+        scoreSpan.textContent = score;
+        startTimer();
+      }
+    };
+
+    replayButton.onclick = () => {
+      puzzleContainer.style.transform = "scale(1)";
+      replayButton.style.display = "none";
+      level2Button.style.display = "none";
+      renderPuzzle();
+      startTimer();
+    };
+
+    level2Button.onclick = () => {
+      alert("Passage au niveau 2 bientôt disponible...");
+    };
+
+    let timer;
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        score++;
+        scoreSpan.textContent = score;
+      }, 1000);
     }
   </script>
 </body>
