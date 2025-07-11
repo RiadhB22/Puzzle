@@ -41,13 +41,15 @@
     const replayButton = document.getElementById("replay-button");
     const level2Button = document.getElementById("level2-button");
 
-    let dragged = null;
     let score = 0;
+    let firstTile = null;
+    let correctOrder = [];
 
     function shuffleTiles() {
-      const indexes = Array.from({length: 9}, (_, i) => i);
-      indexes.sort(() => Math.random() - 0.5);
-      return indexes;
+      correctOrder = Array.from({length: 9}, (_, i) => i);
+      const shuffled = [...correctOrder];
+      shuffled.sort(() => Math.random() - 0.5);
+      return shuffled;
     }
 
     function renderPuzzle() {
@@ -60,39 +62,36 @@
         tile.style.backgroundSize = "360px 360px";
         tile.style.backgroundPosition = `-${(order[i] % 3) * 120}px -${Math.floor(order[i] / 3) * 120}px`;
         tile.dataset.correct = order[i];
-        tile.draggable = true;
-        tile.addEventListener("dragstart", dragStart);
-        tile.addEventListener("dragover", dragOver);
-        tile.addEventListener("drop", dropTile);
+        tile.dataset.index = i;
+        tile.addEventListener("click", handleTileClick);
         puzzleContainer.appendChild(tile);
       }
     }
 
-    function dragStart(e) {
-      dragged = e.target;
-    }
+    function handleTileClick(e) {
+      const clicked = e.target;
+      if (!firstTile) {
+        firstTile = clicked;
+        firstTile.classList.add("selected");
+      } else if (firstTile !== clicked) {
+        const firstIndex = Array.from(puzzleContainer.children).indexOf(firstTile);
+        const secondIndex = Array.from(puzzleContainer.children).indexOf(clicked);
 
-    function dragOver(e) {
-      e.preventDefault();
-    }
+        puzzleContainer.insertBefore(clicked, puzzleContainer.children[firstIndex]);
+        puzzleContainer.insertBefore(firstTile, puzzleContainer.children[secondIndex]);
 
-    function dropTile(e) {
-      e.preventDefault();
-      if (dragged && dragged !== e.target) {
-        const draggedIndex = Array.from(puzzleContainer.children).indexOf(dragged);
-        const targetIndex = Array.from(puzzleContainer.children).indexOf(e.target);
-        const draggedCorrect = dragged.dataset.correct;
-        const targetCorrect = e.target.dataset.correct;
+        const correctFirst = parseInt(firstTile.dataset.correct);
+        const correctSecond = parseInt(clicked.dataset.correct);
 
-        puzzleContainer.insertBefore(dragged, puzzleContainer.children[targetIndex]);
-        puzzleContainer.insertBefore(e.target, puzzleContainer.children[draggedIndex]);
-
-        if (parseInt(draggedCorrect) === targetIndex && parseInt(targetCorrect) === draggedIndex) {
+        if ((correctFirst === secondIndex) && (correctSecond === firstIndex)) {
           score += 5;
         } else {
           score -= 1;
         }
+
         scoreSpan.textContent = score;
+        firstTile.classList.remove("selected");
+        firstTile = null;
         checkWin();
       }
     }
@@ -105,7 +104,6 @@
         if (pos !== i) correct = false;
       }
       if (correct) {
-        puzzleContainer.style.transform = "scale(1.2)";
         clearInterval(timer);
         replayButton.style.display = "inline-block";
         level2Button.style.display = "inline-block";
@@ -125,7 +123,6 @@
     };
 
     replayButton.onclick = () => {
-      puzzleContainer.style.transform = "scale(1)";
       renderPuzzle();
       score = 0;
       scoreSpan.textContent = score;
