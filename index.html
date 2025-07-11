@@ -23,7 +23,7 @@
   <div id="controls">
     <button id="replay-button">🔁 Rejouer</button>
     <span id="stage-info">Niveau 1</span>
-    <button id="level2-button">➡️ Niveau 2</button>
+    <button id="level2-button" disabled>➡️ Niveau 2</button>
   </div>
 
   <div id="ad-space">
@@ -68,6 +68,7 @@
         puzzleContainer.appendChild(tile);
       }
       gameFinished = false;
+      level2Button.disabled = true;
     }
 
     function handleTileClick(e) {
@@ -113,6 +114,7 @@
         setTimeout(() => {
           puzzleContainer.classList.remove("flip-complete");
           puzzleContainer.classList.add("show-stars");
+          level2Button.disabled = false;
           setTimeout(() => {
             puzzleContainer.classList.remove("show-stars");
           }, 2000);
@@ -142,7 +144,9 @@
     };
 
     level2Button.onclick = () => {
-      alert("Passage au niveau 2 bientôt disponible...");
+      if (!level2Button.disabled) {
+        alert("Passage au niveau 2 bientôt disponible...");
+      }
     };
 
     let timer;
