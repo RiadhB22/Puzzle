@@ -2,80 +2,128 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🧩 Puzzle Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Puzzle Game</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      font-family: sans-serif;
-      text-align: center;
-      background: #f9f9f9;
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: linear-gradient(to right, #f0f0f0, #ffffff);
     }
 
-    h1 {
-      margin: 20px 0 10px;
-      font-size: 2em;
-      color: #333;
+    h1.title {
+      font-size: 1.5em;
+      margin: 1em 0 0.3em;
+      line-height: 1em;
+      color: #222;
+      text-shadow: 1px 1px 5px #aaa;
     }
 
     #player-form {
-      margin: 10px auto;
+      margin-bottom: 0.5em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #player-name {
+      padding: 0.4em;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 200px;
+      text-align: center;
+    }
+
+    #start-button {
+      margin-top: 0.5em;
+      padding: 0.5em 1em;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    #player-info, #stage-info, #score-panel {
+      font-size: 1em;
+      color: #555;
+      margin: 0.2em;
     }
 
     #puzzle-container {
-      width: 360px;
-      height: 360px;
-      margin: 20px auto;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, 120px);
+      grid-template-rows: repeat(3, 120px);
       gap: 2px;
-      border: 3px solid #aaa;
-      background: #ccc;
+      margin: 1em auto;
+      border: 4px solid #ccc;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      background-color: #fff;
     }
 
-    .piece {
-      background-image: url('Files/cat.jpg');
-      background-size: 360px 360px;
+    .tile {
       width: 120px;
       height: 120px;
-      border: 1px solid #999;
-      cursor: grab;
+      background-image: url('Files/cat.jpg');
+      background-size: 360px 360px;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
 
-    #score-panel, #player-info, #stage-info {
-      margin: 8px;
-      font-weight: bold;
+    .tile:hover {
+      transform: scale(1.03);
+    }
+
+    #next-button {
+      padding: 0.6em 1.2em;
+      font-size: 1em;
+      margin-top: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      display: none;
     }
 
     #ad-space {
-      margin-top: 30px;
-      padding: 10px;
-      background: white;
-      border-top: 2px solid #eee;
+      margin-top: 1em;
+      text-align: center;
+      background: #fff;
+      padding: 0.5em;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     #ad-space img {
-      width: 180px;
-      margin-top: 10px;
+      width: 200px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-
-  <h1>🧩 Puzzle Game</h1>
+  <h1 class="title">🧩 PUZZLE GAME</h1>
 
   <div id="player-form">
     <input type="text" id="player-name" placeholder="Entrez votre nom" />
-    <button onclick="startGame()">Commencer</button>
+    <button id="start-button">Commencer</button>
   </div>
 
   <div id="player-info"></div>
-  <div id="stage-info">Stage 1</div>
+  <div id="stage-info"></div>
+  <div id="puzzle-container"></div>
   <div id="score-panel">⏱ Temps : <span id="timer">0</span>s | Score : <span id="score">0</span></div>
 
-  <div id="puzzle-container"></div>
+  <button id="next-button">➡ Niveau suivant</button>
 
   <div id="ad-space">
     <h3>Publicité</h3>
@@ -83,102 +131,41 @@
   </div>
 
   <script>
-    let score = 0, seconds = 0, timer, playerName = '';
+    let seconds = 0;
+    let score = 0;
+    let interval;
+    const tiles = [];
 
-    function startGame() {
-      playerName = document.getElementById("player-name").value.trim() || "Joueur";
-      document.getElementById("player-info").textContent = "👤 Joueur : " + playerName;
+    document.getElementById("start-button").addEventListener("click", () => {
+      const name = document.getElementById("player-name").value.trim() || "Joueur";
+      document.getElementById("player-form").style.display = "none";
+      document.getElementById("player-info").textContent = `👤 Joueur : ${name}`;
+      document.getElementById("stage-info").textContent = `📌 Stage 1`;
 
       startTimer();
-      setupPuzzle();
-    }
+      createPuzzle();
+    });
 
     function startTimer() {
-      timer = setInterval(() => {
+      interval = setInterval(() => {
         seconds++;
         document.getElementById("timer").textContent = seconds;
       }, 1000);
     }
 
-    function setupPuzzle() {
+    function createPuzzle() {
       const container = document.getElementById("puzzle-container");
       container.innerHTML = "";
+      const indices = [...Array(9).keys()].sort(() => Math.random() - 0.5);
 
-      const order = [...Array(9).keys()];
-      shuffle(order);
-
-      order.forEach((i, index) => {
-        const x = (i % 3) * -120;
-        const y = Math.floor(i / 3) * -120;
-        const div = document.createElement("div");
-        div.className = "piece";
-        div.style.backgroundPosition = `${x}px ${y}px`;
-        div.setAttribute("data-index", i);
-        div.draggable = true;
-
-        div.addEventListener("dragstart", dragStart);
-        div.addEventListener("dragover", dragOver);
-        div.addEventListener("drop", dropped);
-
-        container.appendChild(div);
+      indices.forEach(i => {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        const row = Math.floor(i / 3);
+        const col = i % 3;
+        tile.style.backgroundPosition = `-${col * 120}px -${row * 120}px`;
+        container.appendChild(tile);
       });
-    }
-
-    let dragged;
-
-    function dragStart(e) {
-      dragged = e.target;
-    }
-
-    function dragOver(e) {
-      e.preventDefault();
-    }
-
-    function dropped(e) {
-      const target = e.target;
-      if (target.classList.contains("piece") && dragged !== target) {
-        const temp = dragged.style.backgroundPosition;
-        const tempIndex = dragged.dataset.index;
-
-        dragged.style.backgroundPosition = target.style.backgroundPosition;
-        dragged.dataset.index = target.dataset.index;
-
-        target.style.backgroundPosition = temp;
-        target.dataset.index = tempIndex;
-
-        if (dragged.dataset.index === dragged.getAttribute("data-index") &&
-            target.dataset.index === target.getAttribute("data-index")) {
-          score += 5;
-        } else {
-          score = Math.max(0, score - 1);
-        }
-
-        document.getElementById("score").textContent = score;
-
-        checkVictory();
-      }
-    }
-
-    function checkVictory() {
-      const pieces = document.querySelectorAll(".piece");
-      let isDone = true;
-      pieces.forEach((piece, i) => {
-        if (parseInt(piece.dataset.index) !== i) {
-          isDone = false;
-        }
-      });
-      if (isDone) {
-        clearInterval(timer);
-        alert(`🎉 Bien joué ${playerName} ! Puzzle complété en ${seconds}s avec score ${score}`);
-        document.getElementById("puzzle-container").style.transform = "scale(1.2)";
-      }
-    }
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
     }
   </script>
 </body>
