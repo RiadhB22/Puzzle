@@ -13,32 +13,35 @@
     <button id="start-button">Commencer</button>
   </div>
 
-  <div id="player-info"></div>
-  <div id="stage-info">Niveau 1</div>
-  <div id="score-panel">Score : <span id="score">0</span></div>
+  <div id="top-bar">
+    <span id="player-info"></span>
+    <span id="score-panel"> | Score : <span id="score">0</span></span>
+  </div>
 
   <div id="puzzle-container"></div>
 
-  <div>
+  <div id="controls">
     <button id="replay-button">🔁 Rejouer</button>
+    <span id="stage-info">Niveau 1</span>
     <button id="level2-button">➡️ Niveau 2</button>
   </div>
 
   <div id="ad-space">
     <h3>Publicité</h3>
-    <img src="Files/PUB.png" alt="Publicité">
+    <img src="Files/PUB.png" alt="Publicité" style="width: 100%; max-width: 200px;">
   </div>
 
   <script>
     const playerNameInput = document.getElementById("player-name");
     const startButton = document.getElementById("start-button");
+    const playerForm = document.getElementById("player-form");
     const playerInfo = document.getElementById("player-info");
     const puzzleContainer = document.getElementById("puzzle-container");
     const scoreSpan = document.getElementById("score");
     const replayButton = document.getElementById("replay-button");
     const level2Button = document.getElementById("level2-button");
 
-    let tiles = [];
+    let dragged = null;
     let score = 0;
 
     function shuffleTiles() {
@@ -53,8 +56,10 @@
       for (let i = 0; i < 9; i++) {
         const tile = document.createElement("div");
         tile.className = "tile";
+        tile.style.backgroundImage = "url('Files/cat.jpg')";
+        tile.style.backgroundSize = "360px 360px";
         tile.style.backgroundPosition = `-${(order[i] % 3) * 120}px -${Math.floor(order[i] / 3) * 120}px`;
-        tile.dataset.order = order[i];
+        tile.dataset.correct = order[i];
         tile.draggable = true;
         tile.addEventListener("dragstart", dragStart);
         tile.addEventListener("dragover", dragOver);
@@ -62,8 +67,6 @@
         puzzleContainer.appendChild(tile);
       }
     }
-
-    let dragged = null;
 
     function dragStart(e) {
       dragged = e.target;
@@ -76,11 +79,20 @@
     function dropTile(e) {
       e.preventDefault();
       if (dragged && dragged !== e.target) {
-        let tmp = document.createElement("div");
-        puzzleContainer.insertBefore(tmp, dragged);
-        puzzleContainer.insertBefore(dragged, e.target);
-        puzzleContainer.insertBefore(e.target, tmp);
-        puzzleContainer.removeChild(tmp);
+        const draggedIndex = Array.from(puzzleContainer.children).indexOf(dragged);
+        const targetIndex = Array.from(puzzleContainer.children).indexOf(e.target);
+        const draggedCorrect = dragged.dataset.correct;
+        const targetCorrect = e.target.dataset.correct;
+
+        puzzleContainer.insertBefore(dragged, puzzleContainer.children[targetIndex]);
+        puzzleContainer.insertBefore(e.target, puzzleContainer.children[draggedIndex]);
+
+        if (parseInt(draggedCorrect) === targetIndex && parseInt(targetCorrect) === draggedIndex) {
+          score += 5;
+        } else {
+          score -= 1;
+        }
+        scoreSpan.textContent = score;
         checkWin();
       }
     }
@@ -89,7 +101,7 @@
       const tiles = puzzleContainer.children;
       let correct = true;
       for (let i = 0; i < tiles.length; i++) {
-        const pos = parseInt(tiles[i].dataset.order);
+        const pos = parseInt(tiles[i].dataset.correct);
         if (pos !== i) correct = false;
       }
       if (correct) {
@@ -104,6 +116,7 @@
       const name = playerNameInput.value.trim();
       if (name) {
         playerInfo.textContent = `👤 ${name}`;
+        playerForm.style.display = "none";
         renderPuzzle();
         score = 0;
         scoreSpan.textContent = score;
@@ -113,9 +126,9 @@
 
     replayButton.onclick = () => {
       puzzleContainer.style.transform = "scale(1)";
-      replayButton.style.display = "none";
-      level2Button.style.display = "none";
       renderPuzzle();
+      score = 0;
+      scoreSpan.textContent = score;
       startTimer();
     };
 
@@ -126,10 +139,7 @@
     let timer;
     function startTimer() {
       clearInterval(timer);
-      timer = setInterval(() => {
-        score++;
-        scoreSpan.textContent = score;
-      }, 1000);
+      timer = setInterval(() => {}, 1000);
     }
   </script>
 </body>
