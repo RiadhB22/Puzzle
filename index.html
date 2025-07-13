@@ -7,27 +7,29 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Puzzle Game3</h1>
-    <div class="top-bar">
-      <input type="text" id="player-name" placeholder="Entrez votre nom" />
-      <button id="start-btn">Commencer</button>
-      <span id="player-info"></span>
-      <button id="restart-btn" disabled>Rejouer</button>
-      <span id="stage-info">Niveau 1</span>
-      <button id="next-btn" disabled>Niveau 2</button>
-    </div>
-  </header>
+  <h1>Puzzle Game 🧩</h1>
 
-  <main>
-    <div id="puzzle-board" class="board"></div>
-    <div id="message-box" class="message"></div>
-  </main>
+  <div class="top-bar">
+    <span id="player-label">Nom: </span>
+    <span id="score">Score: 0</span>
+    <span id="timer">⏱ Temps: 0s</span>
+  </div>
 
-  <footer>
-    <h3>Publicité</h3>
-    <img src="Files/logo5-removebg-preview.png" alt="Pub" class="pub-image" />
-  </footer>
+  <div class="controls">
+    <input type="text" id="player-name" placeholder="Entrez votre nom..." />
+    <button id="start-button">Commencer</button>
+    <button id="restart-button">Rejouer</button>
+    <button id="next-button" disabled>Niveau 2</button>
+  </div>
+
+  <div id="message"></div>
+
+  <div id="puzzle-board" class="puzzle-board"></div>
+
+  <div class="pub">
+    <p>Publicité</p>
+    <img class="pub-image" src="Files/PUB.png" alt="Publicité" />
+  </div>
 
   <script src="script.js"></script>
 </body>
