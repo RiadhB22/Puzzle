@@ -6,149 +6,162 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1 class="title">🧩 Puzzle GameI</h1>
+  <h1 class="title">Puzzle Game</h1>
 
   <div id="player-form">
     <input type="text" id="player-name" placeholder="Entrez votre nom">
     <button id="start-button">Commencer</button>
   </div>
 
-  <div id="top-bar">
-    <span id="player-info"></span>
-    <span id="score-panel"> | Score : <span id="score">0</span></span>
+  <div id="top-bar" style="display: none;">
+    Joueur : <span id="player-display"></span> | Score : <span id="score">0</span>
   </div>
 
   <div id="puzzle-container"></div>
 
-  <div id="controls">
-    <button id="replay-button">🔁 Rejouer</button>
-    <span id="stage-info">Niveau 1</span>
-    <button id="level2-button" disabled>➡️ Niveau 2</button>
+  <div id="controls" style="display: none;">
+    <button id="replay-button">Rejouer</button>
+    <span id="level-display">Niveau 1</span>
+    <button id="level2-button" disabled>Niveau 2</button>
   </div>
 
   <div id="ad-space">
     <h3>Publicité</h3>
-    <img src="Files/PUB.png" alt="Publicité">
+    <img src="Files/PUB.png" alt="PUB">
   </div>
 
   <script>
     const playerNameInput = document.getElementById("player-name");
     const startButton = document.getElementById("start-button");
-    const playerForm = document.getElementById("player-form");
-    const playerInfo = document.getElementById("player-info");
+    const topBar = document.getElementById("top-bar");
+    const playerDisplay = document.getElementById("player-display");
     const puzzleContainer = document.getElementById("puzzle-container");
-    const scoreSpan = document.getElementById("score");
+    const scoreDisplay = document.getElementById("score");
     const replayButton = document.getElementById("replay-button");
     const level2Button = document.getElementById("level2-button");
+    const levelDisplay = document.getElementById("level-display");
+    const controls = document.getElementById("controls");
 
     let score = 0;
-    let firstTile = null;
-    let correctOrder = [];
-    let gameFinished = false;
+    let playerName = "";
+    let selected = null;
+    let tiles = [];
+    let level = 1;
+    let gridSize = 3;
+    let imageSrc = "Files/cat.jpg";
 
-    function shuffleTiles() {
-      correctOrder = Array.from({length: 9}, (_, i) => i);
-      const shuffled = [...correctOrder];
-      shuffled.sort(() => Math.random() - 0.5);
-      return shuffled;
-    }
-
-    function renderPuzzle() {
-      puzzleContainer.innerHTML = "";
-      const order = shuffleTiles();
-      for (let i = 0; i < 9; i++) {
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        tile.style.backgroundImage = "url('Files/cat.jpg')";
-        tile.style.backgroundSize = "360px 360px";
-        tile.style.backgroundPosition = `-${(order[i] % 3) * 120}px -${Math.floor(order[i] / 3) * 120}px`;
-        tile.dataset.correct = order[i];
-        tile.dataset.index = i;
-        tile.addEventListener("click", handleTileClick);
-        puzzleContainer.appendChild(tile);
+    startButton.addEventListener("click", () => {
+      playerName = playerNameInput.value.trim();
+      if (playerName) {
+        playerDisplay.textContent = playerName;
+        document.getElementById("player-form").style.display = "none";
+        topBar.style.display = "block";
+        controls.style.display = "block";
+        startLevel(1);
       }
-      gameFinished = false;
-      level2Button.disabled = true;
-    }
+    });
 
-    function handleTileClick(e) {
-      if (gameFinished) return;
-      const clicked = e.target;
-      if (!firstTile) {
-        firstTile = clicked;
-        firstTile.classList.add("selected");
-      } else if (firstTile !== clicked) {
-        const firstIndex = Array.from(puzzleContainer.children).indexOf(firstTile);
-        const secondIndex = Array.from(puzzleContainer.children).indexOf(clicked);
+    replayButton.addEventListener("click", () => {
+      startLevel(level);
+    });
 
-        puzzleContainer.insertBefore(clicked, puzzleContainer.children[firstIndex]);
-        puzzleContainer.insertBefore(firstTile, puzzleContainer.children[secondIndex]);
+    level2Button.addEventListener("click", () => {
+      startLevel(2);
+    });
 
-        const correctFirst = parseInt(firstTile.dataset.correct);
-        const correctSecond = parseInt(clicked.dataset.correct);
-
-        if ((correctFirst === secondIndex) && (correctSecond === firstIndex)) {
-          score += 5;
-        } else {
-          score -= 1;
-        }
-
-        scoreSpan.textContent = score;
-        firstTile.classList.remove("selected");
-        firstTile = null;
-        checkWin();
-      }
-    }
-
-    function checkWin() {
-      const tiles = puzzleContainer.children;
-      let correct = true;
-      for (let i = 0; i < tiles.length; i++) {
-        const pos = parseInt(tiles[i].dataset.correct);
-        if (pos !== i) correct = false;
-      }
-      if (correct) {
-        gameFinished = true;
-        puzzleContainer.classList.add("flip-complete");
-
-        const congrats = document.createElement("div");
-        congrats.className = "congrats-message";
-        congrats.innerHTML = `🎉 Bravo ${playerInfo.textContent} ! Puzzle complété !`;
-        document.body.appendChild(congrats);
-
-        setTimeout(() => {
-          congrats.remove();
-        }, 4000);
-
-        level2Button.disabled = false;
-
-        replayButton.style.display = "inline-block";
-        level2Button.style.display = "inline-block";
-      }
-    }
-
-    startButton.onclick = () => {
-      const name = playerNameInput.value.trim();
-      if (name) {
-        playerInfo.textContent = `👤 ${name}`;
-        playerForm.style.display = "none";
-        renderPuzzle();
-        score = 0;
-        scoreSpan.textContent = score;
-      }
-    };
-
-    replayButton.onclick = () => {
-      renderPuzzle();
+    function startLevel(lv) {
+      level = lv;
       score = 0;
-      scoreSpan.textContent = score;
-    };
+      scoreDisplay.textContent = score;
+      levelDisplay.textContent = `Niveau ${lv}`;
+      level2Button.disabled = true;
 
-    level2Button.onclick = () => {
-      if (!level2Button.disabled) {
-        alert("Passage au niveau 2 bientôt disponible...");
+      if (lv === 1) {
+        gridSize = 3;
+        imageSrc = "Files/cat.jpg";
+      } else {
+        gridSize = 4;
+        imageSrc = "Files/cat2.jpg";
       }
-    };
+
+      generatePuzzle();
+    }
+
+    function generatePuzzle() {
+      puzzleContainer.innerHTML = "";
+      puzzleContainer.style.gridTemplateColumns = `repeat(${gridSize}, 120px)`;
+      puzzleContainer.style.gridTemplateRows = `repeat(${gridSize}, 120px)`;
+
+      tiles = [];
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          tiles.push({
+            correctIndex: row * gridSize + col,
+            currentIndex: row * gridSize + col,
+            row,
+            col
+          });
+        }
+      }
+
+      do {
+        shuffleArray(tiles);
+      } while (tiles.some((t, i) => t.correctIndex === i));
+
+      tiles.forEach((tile, index) => {
+        const div = document.createElement("div");
+        div.classList.add("tile");
+        const correctRow = Math.floor(tile.correctIndex / gridSize);
+        const correctCol = tile.correctIndex % gridSize;
+        div.style.backgroundImage = `url(${imageSrc})`;
+        div.style.backgroundPosition = `-${correctCol * 120}px -${correctRow * 120}px`;
+        div.dataset.index = index;
+        puzzleContainer.appendChild(div);
+      });
+
+      document.querySelectorAll(".tile").forEach(tile => {
+        tile.addEventListener("click", () => {
+          if (!selected) {
+            selected = tile;
+            tile.classList.add("selected");
+          } else {
+            const index1 = parseInt(selected.dataset.index);
+            const index2 = parseInt(tile.dataset.index);
+            if (index1 !== index2) {
+              [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
+              score += (tiles[index1].correctIndex === index1 && tiles[index2].correctIndex === index2) ? 5 : -1;
+              scoreDisplay.textContent = score;
+              generatePuzzle();
+              if (checkCompletion()) {
+                showCongrats();
+                level2Button.disabled = false;
+              }
+            }
+            selected.classList.remove("selected");
+            selected = null;
+          }
+        });
+      });
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function checkCompletion() {
+      return tiles.every((tile, i) => tile.correctIndex === i);
+    }
+
+    function showCongrats() {
+      const msg = document.createElement("div");
+      msg.className = "congrats-message";
+      msg.textContent = "🎉 Bravo ! Vous avez complété le puzzle !";
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 4000);
+    }
   </script>
 </body>
 </html>
