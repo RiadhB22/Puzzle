@@ -84,8 +84,10 @@
 
     function generatePuzzle() {
       puzzleContainer.innerHTML = "";
-      puzzleContainer.style.gridTemplateColumns = `repeat(${gridSize}, 120px)`;
-      puzzleContainer.style.gridTemplateRows = `repeat(${gridSize}, 120px)`;
+const tileSize = 480 / gridSize;
+puzzleContainer.style.gridTemplateColumns = `repeat(${gridSize}, ${tileSize}px)`;
+puzzleContainer.style.gridTemplateRows = `repeat(${gridSize}, ${tileSize}px)`;
+
 
       tiles = [];
       for (let i = 0; i < gridSize * gridSize; i++) {
