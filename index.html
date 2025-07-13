@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Puzzle Game</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Puzzle Game</h1>
-  <div id="game-container">
-    <div id="player-info">
-      <input type="text" id="player-name" placeholder="Entrez votre nom">
-      <button id="start-button">Commencer</button>
+  <header>
+    <h1>Puzzle Game</h1>
+    <div class="top-bar">
+      <input type="text" id="player-name" placeholder="Entrez votre nom" />
+      <button id="start-btn">Commencer</button>
+      <span id="player-info"></span>
+      <button id="restart-btn" disabled>Rejouer</button>
+      <span id="stage-info">Niveau 1</span>
+      <button id="next-btn" disabled>Niveau 2</button>
     </div>
-    <div id="message-box"></div>
-    <div id="puzzle-board"></div>
-    <div class="controls">
-      <button id="replay-button" disabled>Rejouer</button>
-      <span id="niveau">Niveau 1</span>
-      <button id="next-button" disabled>Niveau Suivant</button>
-    </div>
-    <div id="pub-zone">
-      <p>Publicité</p>
-      <img src="Files/PUB.png" alt="Publicité">
-    </div>
-  </div>
-  <script src="puzzle.js"></script>
+  </header>
+
+  <main>
+    <div id="puzzle-board" class="board"></div>
+    <div id="message-box" class="message"></div>
+  </main>
+
+  <footer>
+    <h3>Publicité</h3>
+    <img src="Files/logo5-removebg-preview.png" alt="Pub" class="pub-image" />
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
