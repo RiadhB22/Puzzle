@@ -56,7 +56,7 @@
         playerDisplay.textContent = playerName;
         document.getElementById("player-form").style.display = "none";
         topBar.style.display = "block";
-        controls.style.display = "block";
+        controls.style.display = "flex";
         startLevel(1);
       }
     });
@@ -93,54 +93,84 @@
       puzzleContainer.style.gridTemplateRows = `repeat(${gridSize}, 120px)`;
 
       tiles = [];
-      for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize; col++) {
-          tiles.push({
-            correctIndex: row * gridSize + col,
-            currentIndex: row * gridSize + col,
-            row,
-            col
-          });
-        }
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        tiles.push({ id: i, correctIndex: i, currentIndex: i, row, col });
       }
 
       do {
         shuffleArray(tiles);
-      } while (tiles.some((t, i) => t.correctIndex === i));
+      } while (tiles.some((tile, i) => tile.id === i));
 
-      tiles.forEach((tile, index) => {
+      tiles.forEach((tile, i) => {
+        tile.currentIndex = i;
         const div = document.createElement("div");
         div.classList.add("tile");
-        const correctRow = Math.floor(tile.correctIndex / gridSize);
-        const correctCol = tile.correctIndex % gridSize;
+        const correctRow = Math.floor(tile.id / gridSize);
+        const correctCol = tile.id % gridSize;
         div.style.backgroundImage = `url(${imageSrc})`;
         div.style.backgroundPosition = `-${correctCol * 120}px -${correctRow * 120}px`;
-        div.dataset.index = index;
+        div.dataset.id = tile.id;
+        div.dataset.currentIndex = i;
         puzzleContainer.appendChild(div);
+        tile.element = div;
       });
 
       document.querySelectorAll(".tile").forEach(tile => {
-        tile.addEventListener("click", () => {
-          if (!selected) {
-            selected = tile;
-            tile.classList.add("selected");
-          } else {
-            const index1 = parseInt(selected.dataset.index);
-            const index2 = parseInt(tile.dataset.index);
-            if (index1 !== index2) {
-              [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
-              score += (tiles[index1].correctIndex === index1 && tiles[index2].correctIndex === index2) ? 5 : -1;
-              scoreDisplay.textContent = score;
-              generatePuzzle();
-              if (checkCompletion()) {
-                showCongrats();
-                level2Button.disabled = false;
-              }
-            }
-            selected.classList.remove("selected");
-            selected = null;
-          }
-        });
+        tile.addEventListener("click", () => handleTileClick(tile));
+      });
+    }
+
+    function handleTileClick(tileElement) {
+      if (!selected) {
+        selected = tileElement;
+        tileElement.classList.add("selected");
+        return;
+      }
+
+      if (selected === tileElement) {
+        selected.classList.remove("selected");
+        selected = null;
+        return;
+      }
+
+      const id1 = parseInt(selected.dataset.id);
+      const id2 = parseInt(tileElement.dataset.id);
+      const index1 = tiles.findIndex(t => t.id === id1);
+      const index2 = tiles.findIndex(t => t.id === id2);
+
+      [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
+
+      score += (tiles[index1].id === index1 && tiles[index2].id === index2) ? 5 : -1;
+      scoreDisplay.textContent = score;
+
+      selected.classList.remove("selected");
+      selected = null;
+
+      updateTiles();
+
+      if (checkCompletion()) {
+        showCongrats();
+        level2Button.disabled = false;
+      }
+    }
+
+    function updateTiles() {
+      puzzleContainer.innerHTML = "";
+      tiles.forEach((tile, i) => {
+        tile.currentIndex = i;
+        const div = document.createElement("div");
+        div.classList.add("tile");
+        const correctRow = Math.floor(tile.id / gridSize);
+        const correctCol = tile.id % gridSize;
+        div.style.backgroundImage = `url(${imageSrc})`;
+        div.style.backgroundPosition = `-${correctCol * 120}px -${correctRow * 120}px`;
+        div.dataset.id = tile.id;
+        div.dataset.currentIndex = i;
+        puzzleContainer.appendChild(div);
+        tile.element = div;
+        div.addEventListener("click", () => handleTileClick(div));
       });
     }
 
@@ -152,7 +182,7 @@
     }
 
     function checkCompletion() {
-      return tiles.every((tile, i) => tile.correctIndex === i);
+      return tiles.every((tile, i) => tile.id === i);
     }
 
     function showCongrats() {
