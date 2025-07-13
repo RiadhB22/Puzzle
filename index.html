@@ -31,6 +31,124 @@
     <img src="Files/PUB.png" alt="Publicité">
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const playerNameInput = document.getElementById("player-name");
+    const startButton = document.getElementById("start-button");
+    const playerForm = document.getElementById("player-form");
+    const playerInfo = document.getElementById("player-info");
+    const puzzleContainer = document.getElementById("puzzle-container");
+    const scoreSpan = document.getElementById("score");
+    const replayButton = document.getElementById("replay-button");
+    const level2Button = document.getElementById("level2-button");
+
+    let score = 0;
+    let firstTile = null;
+    let correctOrder = [];
+    let gameFinished = false;
+
+    function shuffleTiles() {
+      correctOrder = Array.from({length: 9}, (_, i) => i);
+      const shuffled = [...correctOrder];
+      shuffled.sort(() => Math.random() - 0.5);
+      return shuffled;
+    }
+
+    function renderPuzzle() {
+      puzzleContainer.innerHTML = "";
+      const order = shuffleTiles();
+      for (let i = 0; i < 9; i++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.style.backgroundImage = "url('Files/cat.jpg')";
+        tile.style.backgroundSize = "360px 360px";
+        tile.style.backgroundPosition = `-${(order[i] % 3) * 120}px -${Math.floor(order[i] / 3) * 120}px`;
+        tile.dataset.correct = order[i];
+        tile.dataset.index = i;
+        tile.addEventListener("click", handleTileClick);
+        puzzleContainer.appendChild(tile);
+      }
+      gameFinished = false;
+      level2Button.disabled = true;
+    }
+
+    function handleTileClick(e) {
+      if (gameFinished) return;
+      const clicked = e.target;
+      if (!firstTile) {
+        firstTile = clicked;
+        firstTile.classList.add("selected");
+      } else if (firstTile !== clicked) {
+        const firstIndex = Array.from(puzzleContainer.children).indexOf(firstTile);
+        const secondIndex = Array.from(puzzleContainer.children).indexOf(clicked);
+
+        puzzleContainer.insertBefore(clicked, puzzleContainer.children[firstIndex]);
+        puzzleContainer.insertBefore(firstTile, puzzleContainer.children[secondIndex]);
+
+        const correctFirst = parseInt(firstTile.dataset.correct);
+        const correctSecond = parseInt(clicked.dataset.correct);
+
+        if ((correctFirst === secondIndex) && (correctSecond === firstIndex)) {
+          score += 5;
+        } else {
+          score -= 1;
+        }
+
+        scoreSpan.textContent = score;
+        firstTile.classList.remove("selected");
+        firstTile = null;
+        checkWin();
+      }
+    }
+
+    function checkWin() {
+      const tiles = puzzleContainer.children;
+      let correct = true;
+      for (let i = 0; i < tiles.length; i++) {
+        const pos = parseInt(tiles[i].dataset.correct);
+        if (pos !== i) correct = false;
+      }
+      if (correct) {
+        gameFinished = true;
+        puzzleContainer.classList.add("flip-complete");
+
+        const congrats = document.createElement("div");
+        congrats.className = "congrats-message";
+        congrats.innerHTML = `🎉 Bravo ${playerInfo.textContent} ! Puzzle complété !`;
+        document.body.appendChild(congrats);
+
+        setTimeout(() => {
+          congrats.remove();
+        }, 4000);
+
+        level2Button.disabled = false;
+
+        replayButton.style.display = "inline-block";
+        level2Button.style.display = "inline-block";
+      }
+    }
+
+    startButton.onclick = () => {
+      const name = playerNameInput.value.trim();
+      if (name) {
+        playerInfo.textContent = `👤 ${name}`;
+        playerForm.style.display = "none";
+        renderPuzzle();
+        score = 0;
+        scoreSpan.textContent = score;
+      }
+    };
+
+    replayButton.onclick = () => {
+      renderPuzzle();
+      score = 0;
+      scoreSpan.textContent = score;
+    };
+
+    level2Button.onclick = () => {
+      if (!level2Button.disabled) {
+        alert("Passage au niveau 2 bientôt disponible...");
+      }
+    };
+  </script>
 </body>
 </html>
