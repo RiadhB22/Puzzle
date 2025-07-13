@@ -38,26 +38,28 @@ h1 {
   max-width: 500px;
   aspect-ratio: 1 / 1;
   margin: 10px auto;
-  gap: 2px;
+  gap: 1px;
+  background-color: #ddd;
 }
 
 .piece {
   width: 100%;
   height: 100%;
-  background-size: 100% 100%;
+  background-size: cover;
   background-repeat: no-repeat;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .piece:hover {
   transform: scale(1.05);
+  outline: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
   margin: 10px 0;
@@ -93,11 +95,14 @@ button:disabled {
   margin-top: 10px;
   width: 100%;
   text-align: center;
+  padding: 0;
+  margin-bottom: 10px;
 }
 
 #pub-zone img {
-  max-width: 100%;
+  max-width: 150px;
   height: auto;
+  margin-top: 5px;
 }
 
 #message-box {
@@ -119,7 +124,10 @@ button:disabled {
   #puzzle-board {
     width: 90vw;
   }
+  #pub-zone img {
+    max-width: 120px;
+  }
   #pub-zone {
-    padding-bottom: 10px;
+    padding-bottom: 5px;
   }
 }
