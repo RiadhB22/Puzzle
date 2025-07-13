@@ -14,10 +14,8 @@
   </div>
 
   <div id="top-bar" style="display: none;">
-    Joueur : <span id="player-display"></span> | Score : <span id="score">0</span>
+    <span id="player-display"></span> | Score : <span id="score">0</span>
   </div>
-
-  <div id="puzzle-container"></div>
 
   <div id="controls" style="display: none;">
     <button id="replay-button">Rejouer</button>
@@ -25,9 +23,11 @@
     <button id="level2-button" disabled>Niveau 2</button>
   </div>
 
+  <div id="puzzle-container"></div>
+
   <div id="ad-space">
     <h3>Publicité</h3>
-    <img src="Files/PUB.png" alt="PUB">
+    <img src="Files/PUB.png" alt="Publicité" id="pub-img">
   </div>
 
   <script>
@@ -53,7 +53,7 @@
     startButton.addEventListener("click", () => {
       playerName = playerNameInput.value.trim();
       if (playerName) {
-        playerDisplay.textContent = playerName;
+        playerDisplay.textContent = `Joueur : ${playerName}`;
         document.getElementById("player-form").style.display = "none";
         topBar.style.display = "block";
         controls.style.display = "flex";
@@ -76,13 +76,8 @@
       levelDisplay.textContent = `Niveau ${lv}`;
       level2Button.disabled = true;
 
-      if (lv === 1) {
-        gridSize = 3;
-        imageSrc = "Files/cat.jpg";
-      } else {
-        gridSize = 4;
-        imageSrc = "Files/cat2.jpg";
-      }
+      gridSize = lv === 1 ? 3 : 4;
+      imageSrc = lv === 1 ? "Files/cat.jpg" : "Files/cat2.jpg";
 
       generatePuzzle();
     }
