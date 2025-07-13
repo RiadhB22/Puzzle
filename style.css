@@ -1,45 +1,55 @@
+/* style.css */
+
 body {
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  text-align: center;
+  background-color: #f9f9f9;
   margin: 0;
   padding: 0;
-  text-align: center;
 }
 
 .title {
-  font-size: 2.2em;
-  margin: 10px;
+  font-size: 2em;
+  margin: 20px 0;
   color: #333;
 }
 
 #player-form {
-  margin: 15px;
+  margin-bottom: 20px;
 }
 
-#player-form input {
-  padding: 8px;
-  font-size: 16px;
-  width: 200px;
+#player-name {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
-#player-form button {
-  padding: 8px 16px;
-  font-size: 16px;
+#start-button {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
   margin-left: 10px;
 }
 
 #top-bar {
-  margin: 10px 0;
-  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 1.1em;
 }
 
 #puzzle-container {
-  width: 360px;
-  height: 360px;
-  margin: 20px auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 120px);
+  grid-template-rows: repeat(3, 120px);
   gap: 2px;
+  justify-content: center;
+  margin: auto;
+  max-width: 380px;
+  margin-bottom: 20px;
 }
 
 .tile {
@@ -47,37 +57,41 @@ body {
   height: 120px;
   background-size: 360px 360px;
   cursor: pointer;
+  transition: transform 0.2s;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  transition: transform 0.2s ease;
 }
 
-.tile:hover {
-  transform: scale(1.05);
-  border-color: #444;
+.tile.selected {
+  outline: 2px solid #2196F3;
 }
 
 #controls {
-  margin: 15px;
+  margin-bottom: 20px;
 }
 
-#controls button {
+#replay-button, #level2-button {
   padding: 10px 20px;
-  font-size: 15px;
-  margin: 5px;
+  font-size: 1em;
+  border-radius: 5px;
+  margin: 0 10px;
+  cursor: pointer;
 }
 
-#stage-info {
-  font-weight: bold;
-  margin: 0 10px;
+#level2-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 #ad-space {
-  margin: 10px auto;
-  padding: 5px;
+  margin-top: 30px;
 }
 
-#ad-space h3 {
-  margin-bottom: 5px;
+#ad-space img {
+  width: 100%;
+  max-width: 200px;
+  display: block;
+  margin: auto;
 }
 
 .congrats-message {
