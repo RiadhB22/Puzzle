@@ -14,10 +14,13 @@
   <div class="top-bar" id="top-bar">
     <input type="text" id="player-name" placeholder="Entrez votre nom">
     <button id="start-button">Commencer</button>
-    <span id="score-display" style="display:none;">Score : <span id="score">0</span></span>
-    <button id="replay-button" style="display:none;">Rejouer</button>
-    <span id="level-indicator" style="display:none;">Niveau 1</span>
-    <button id="next-level-button" disabled style="display:none;">Niveau 2</button>
+    <div id="game-controls" style="display:none;">
+      <span id="player-display"></span>
+      <span id="score-display">Score : <span id="score">0</span></span>
+      <button id="replay-button">Rejouer</button>
+      <span id="level-indicator">Niveau 1</span>
+      <button id="next-level-button" disabled>Niveau 2</button>
+    </div>
   </div>
 
   <div id="puzzle-board"></div>
