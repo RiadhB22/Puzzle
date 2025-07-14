@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PUZZLE GAME3</title>
+  <title>PUZZLE GAME</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>PUZZLE GAME</h1>
+    <h1 class="responsive-title">PUZZLE GAME</h1>
   </header>
 
   <div class="top-bar" id="top-bar">
-    <input type="text" id="player-name" placeholder="Entrez votre nom">
-    <button id="start-button">Commencer</button>
+    <div id="start-section">
+      <input type="text" id="player-name" placeholder="Entrez votre nom">
+      <button id="start-button">Commencer</button>
+    </div>
     <div id="game-controls" style="display:none;">
       <span id="player-display"></span>
       <span id="score-display">Score : <span id="score">0</span></span>
@@ -23,7 +25,9 @@
     </div>
   </div>
 
-  <div id="puzzle-board"></div>
+  <div id="puzzle-board-container">
+    <div id="puzzle-board"></div>
+  </div>
 
   <div class="message" id="message"></div>
 
