@@ -17,19 +17,22 @@
       <button id="start-button">Commencer</button>
     </div>
     <div id="game-controls" style="display:none;">
-      <span id="player-display"></span>
-      <span id="score-display">Score : <span id="score">0</span></span>
-      <button id="replay-button">Rejouer</button>
-      <span id="level-indicator">Niveau 1</span>
-      <button id="next-level-button" disabled>Niveau 2</button>
+      <div class="player-info">
+        <span id="player-display"></span>
+        <span id="score-display">Score : <span id="score">0</span></span>
+      </div>
+      <div class="level-controls">
+        <button id="replay-button">Rejouer</button>
+        <span id="level-indicator">Niveau 1</span>
+        <button id="next-level-button" disabled>Niveau 2</button>
+      </div>
     </div>
   </div>
 
   <div id="puzzle-board-container">
     <div id="puzzle-board"></div>
+    <div class="congrats-message" id="congrats-message" style="display: none;">🎉 Bravo ! 🎉</div>
   </div>
-
-  <div class="message" id="message"></div>
 
   <footer>
     <h3>Publicité</h3>
