@@ -1,82 +1,124 @@
-const image = "files/cat.jpg"; // change ici si tu veux cat2.jpg ou PUB.png
-const puzzle = document.getElementById("puzzle");
-const message = document.getElementById("message");
-const size = 3;
+const puzzleSize = 3;
 let pieces = [];
-let firstPiece = null;
+let emptyIndex = null;
+let moves = 0;
+let score = 0;
+let timerInterval;
+let seconds = 0;
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
+const clickSound = document.getElementById("clickSound");
+const swapSound = document.getElementById("swapSound");
+const winSound = document.getElementById("winSound");
+
+function startGame() {
+  const name = document.getElementById("playerNameInput").value || "Joueur";
+  document.getElementById("playerName").textContent = name;
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("gameInfo").classList.remove("hidden");
+  document.getElementById("puzzleContainer").classList.remove("hidden");
+  document.getElementById("message").classList.add("hidden");
+
+  score = 0;
+  moves = 0;
+  seconds = 0;
+  document.getElementById("score").textContent = score;
+  document.getElementById("moves").textContent = moves;
+  document.getElementById("timer").textContent = "00:00";
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(updateTimer, 1000);
+
+  initPuzzle();
 }
 
-function createPuzzle() {
-  const indices = [...Array(size * size).keys()];
-  shuffle(indices);
+function updateTimer() {
+  seconds++;
+  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const sec = String(seconds % 60).padStart(2, "0");
+  document.getElementById("timer").textContent = `${min}:${sec}`;
+}
 
-  puzzle.innerHTML = "";
+function initPuzzle() {
+  const container = document.getElementById("puzzleContainer");
+  container.innerHTML = "";
   pieces = [];
 
-  for (let i = 0; i < indices.length; i++) {
-    const correctIndex = i;
-    const shuffledIndex = indices[i];
-
-    const row = Math.floor(shuffledIndex / size);
-    const col = shuffledIndex % size;
-
-    const piece = document.createElement("div");
-    piece.className = "piece";
-    piece.dataset.correctIndex = correctIndex;
-    piece.dataset.currentIndex = shuffledIndex;
-    piece.style.backgroundImage = `url(${image})`;
-    piece.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
-
-    piece.addEventListener("click", () => handleClick(piece));
-
-    puzzle.appendChild(piece);
-    pieces.push(piece);
+  for (let i = 0; i < puzzleSize * puzzleSize; i++) {
+    pieces.push(i);
   }
 
-  if (isSolved()) {
-    createPuzzle(); // évite un puzzle déjà résolu
+  do {
+    shuffleArray(pieces);
+  } while (pieces.every((val, idx) => val === idx)); // S'assurer que ce n’est pas déjà bon
+
+  pieces.forEach((val, idx) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    const x = val % puzzleSize;
+    const y = Math.floor(val / puzzleSize);
+    tile.style.backgroundPosition = `-${x * 100}px -${y * 100}px`;
+    tile.dataset.index = idx;
+    tile.dataset.value = val;
+    tile.addEventListener("click", handleClick);
+    container.appendChild(tile);
+  });
+}
+
+let firstTile = null;
+
+function handleClick(e) {
+  clickSound.play();
+  const tile = e.currentTarget;
+  if (!firstTile) {
+    firstTile = tile;
+    tile.style.outline = "2px solid red";
+  } else if (tile !== firstTile) {
+    swapSound.play();
+    const idx1 = +firstTile.dataset.index;
+    const idx2 = +tile.dataset.index;
+    const val1 = firstTile.dataset.value;
+    const val2 = tile.dataset.value;
+
+    // Échanger les positions
+    [pieces[idx1], pieces[idx2]] = [pieces[idx2], pieces[idx1]];
+    firstTile.dataset.value = val2;
+    tile.dataset.value = val1;
+
+    updateTiles();
+    moves++;
+    document.getElementById("moves").textContent = moves;
+    checkWin();
+
+    firstTile.style.outline = "none";
+    firstTile = null;
   }
 }
 
-function handleClick(piece) {
-  if (!firstPiece) {
-    firstPiece = piece;
-    piece.style.border = "2px solid red";
-  } else if (piece !== firstPiece) {
-    swapPieces(firstPiece, piece);
-    firstPiece.style.border = "";
-    firstPiece = null;
+function updateTiles() {
+  const tiles = document.querySelectorAll(".tile");
+  tiles.forEach((tile, idx) => {
+    const val = pieces[idx];
+    const x = val % puzzleSize;
+    const y = Math.floor(val / puzzleSize);
+    tile.style.backgroundPosition = `-${x * 100}px -${y * 100}px`;
+    tile.dataset.value = val;
+  });
+}
 
-    if (isSolved()) {
-      showVictory();
-    }
+function checkWin() {
+  const won = pieces.every((val, idx) => val === idx);
+  if (won) {
+    clearInterval(timerInterval);
+    score = 1000 - moves * 10 + Math.max(0, 600 - seconds);
+    document.getElementById("score").textContent = score;
+    document.getElementById("message").classList.remove("hidden");
+    winSound.play();
   }
 }
 
-function swapPieces(p1, p2) {
-  const tempPos = p1.style.backgroundPosition;
-  const tempIndex = p1.dataset.currentIndex;
-
-  p1.style.backgroundPosition = p2.style.backgroundPosition;
-  p1.dataset.currentIndex = p2.dataset.currentIndex;
-
-  p2.style.backgroundPosition = tempPos;
-  p2.dataset.currentIndex = tempIndex;
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
 }
-
-function isSolved() {
-  return pieces.every((p, i) => parseInt(p.dataset.currentIndex) === i);
-}
-
-function showVictory() {
-  message.style.display = "block";
-  puzzle.innerHTML = `<img src="${image}" width="300" height="300">`;
-}
-
-createPuzzle();
