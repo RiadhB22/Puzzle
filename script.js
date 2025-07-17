@@ -1,78 +1,71 @@
-const container = document.getElementById("container");
+const puzzle = document.getElementById("puzzle");
 const message = document.getElementById("message");
-const imagePath = "files/puzzle.jpg"; // Ton image dans le dossier files/
-const size = 3; // 3x3
-
+const size = 3; // 3x3 puzzle
 let pieces = [];
-let firstPiece = null;
 
-function createPieces() {
-  const order = [...Array(size * size).keys()];
-  shuffle(order);
+function createPuzzle() {
+  const indices = [...Array(size * size).keys()];
+  shuffle(indices);
 
-  for (let i = 0; i < order.length; i++) {
+  for (let i = 0; i < indices.length; i++) {
+    const idx = indices[i];
+    const row = Math.floor(idx / size);
+    const col = idx % size;
+
     const piece = document.createElement("div");
     piece.classList.add("piece");
-
-    const row = Math.floor(order[i] / size);
-    const col = order[i] % size;
-
-    piece.style.backgroundImage = `url('${imagePath}')`;
+    piece.dataset.index = idx;
     piece.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
-    piece.dataset.index = i;
 
-    container.appendChild(piece);
+    piece.addEventListener("click", () => handleClick(piece));
+    puzzle.appendChild(piece);
     pieces.push(piece);
+  }
 
-    piece.addEventListener("click", () => handlePieceClick(piece));
+  if (isSolved()) {
+    puzzle.innerHTML = "";
+    pieces = [];
+    createPuzzle(); // re-shuffle si résolu dès le début
   }
 }
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
+let first = null;
+
+function handleClick(piece) {
+  if (!first) {
+    first = piece;
+    piece.style.border = "2px solid red";
+  } else if (piece !== first) {
+    swap(first, piece);
+    first.style.border = "";
+    first = null;
+    if (isSolved()) {
+      message.style.display = "block";
+    }
+  }
+}
+
+function swap(p1, p2) {
+  const bg1 = p1.style.backgroundPosition;
+  const bg2 = p2.style.backgroundPosition;
+  const i1 = p1.dataset.index;
+  const i2 = p2.dataset.index;
+
+  p1.style.backgroundPosition = bg2;
+  p2.style.backgroundPosition = bg1;
+  p1.dataset.index = i2;
+  p2.dataset.index = i1;
+}
+
+function isSolved() {
+  return pieces.every((p, i) => parseInt(p.dataset.index) === i);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-
-  // Re-shuffle si une pièce est à sa bonne place
-  if (array.some((val, i) => val === i)) {
-    shuffle(array);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }
 
-function handlePieceClick(piece) {
-  if (!firstPiece) {
-    firstPiece = piece;
-    piece.style.outline = "3px solid #3498db";
-  } else if (piece !== firstPiece) {
-    piece.style.outline = "3px solid #e74c3c";
-
-    setTimeout(() => {
-      swapPieces(firstPiece, piece);
-      firstPiece.style.outline = "";
-      piece.style.outline = "";
-      firstPiece = null;
-      checkWin();
-    }, 400);
-  }
-}
-
-function swapPieces(p1, p2) {
-  const temp = p1.style.backgroundPosition;
-  p1.style.backgroundPosition = p2.style.backgroundPosition;
-  p2.style.backgroundPosition = temp;
-
-  const tempIndex = p1.dataset.index;
-  p1.dataset.index = p2.dataset.index;
-  p2.dataset.index = tempIndex;
-}
-
-function checkWin() {
-  const correct = pieces.every((p, i) => parseInt(p.dataset.index) === i);
-  if (correct) {
-    message.style.display = "block";
-    container.style.pointerEvents = "none";
-  }
-}
-
-createPieces();
+createPuzzle();
