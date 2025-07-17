@@ -1,6 +1,7 @@
+const image = "files/cat.jpg"; // choisis ici : cat.jpg, cat2.jpg ou PUB.png
 const puzzle = document.getElementById("puzzle");
 const message = document.getElementById("message");
-const size = 3; // 3x3 puzzle
+const size = 3;
 let pieces = [];
 
 function createPuzzle() {
@@ -13,8 +14,9 @@ function createPuzzle() {
     const col = idx % size;
 
     const piece = document.createElement("div");
-    piece.classList.add("piece");
+    piece.className = "piece";
     piece.dataset.index = idx;
+    piece.style.backgroundImage = `url(${image})`;
     piece.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
 
     piece.addEventListener("click", () => handleClick(piece));
@@ -25,7 +27,7 @@ function createPuzzle() {
   if (isSolved()) {
     puzzle.innerHTML = "";
     pieces = [];
-    createPuzzle(); // re-shuffle si résolu dès le début
+    createPuzzle();
   }
 }
 
@@ -41,20 +43,21 @@ function handleClick(piece) {
     first = null;
     if (isSolved()) {
       message.style.display = "block";
+      enlargeImage();
     }
   }
 }
 
 function swap(p1, p2) {
-  const bg1 = p1.style.backgroundPosition;
-  const bg2 = p2.style.backgroundPosition;
-  const i1 = p1.dataset.index;
-  const i2 = p2.dataset.index;
+  const pos1 = p1.style.backgroundPosition;
+  const pos2 = p2.style.backgroundPosition;
+  const index1 = p1.dataset.index;
+  const index2 = p2.dataset.index;
 
-  p1.style.backgroundPosition = bg2;
-  p2.style.backgroundPosition = bg1;
-  p1.dataset.index = i2;
-  p2.dataset.index = i1;
+  p1.style.backgroundPosition = pos2;
+  p2.style.backgroundPosition = pos1;
+  p1.dataset.index = index2;
+  p2.dataset.index = index1;
 }
 
 function isSolved() {
@@ -66,6 +69,14 @@ function shuffle(arr) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+}
+
+function enlargeImage() {
+  puzzle.innerHTML = "";
+  const img = document.createElement("img");
+  img.src = image;
+  img.style.width = "300px";
+  puzzle.appendChild(img);
 }
 
 createPuzzle();
