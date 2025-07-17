@@ -3,42 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PUZZLE GAME</title>
+  <title>Jeu Puzzle - Niveau 1</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1 class="responsive-title">PUZZLE GAME</h1>
+    <h1 class="responsive-title">🧩 Jeu Puzzle - Niveau 1</h1>
   </header>
 
-  <div class="top-bar" id="top-bar">
+  <div class="top-bar">
     <div id="start-section">
-      <input type="text" id="player-name" placeholder="Entrez votre nom">
+      <input type="text" id="player-name" placeholder="Nom du joueur">
       <button id="start-button">Commencer</button>
     </div>
-    <div id="game-controls" style="display:none;">
-      <div class="player-info">
-        <span id="player-display"></span>
-        <span id="score-display">Score : <span id="score">0</span></span>
-      </div>
-      <div class="level-controls">
-        <button id="replay-button">Rejouer</button>
-        <span id="level-indicator">Niveau 1</span>
-        <button id="next-level-button" disabled>Niveau 2</button>
-      </div>
+    <div class="player-info" id="player-info" style="display:none">
+      <span id="score">Score : 0</span>
+      <span id="player-display"></span>
+    </div>
+    <div class="level-controls" style="display:none">
+      <button id="restart-button">Rejouer</button>
+      <span id="level-indicator">Niveau 1</span>
+      <button id="next-level-button" disabled>Niveau 2</button>
     </div>
   </div>
 
   <div id="puzzle-board-container">
     <div id="puzzle-board"></div>
-    <div class="congrats-message" id="congrats-message" style="display: none;">🎉 Bravo ! 🎉</div>
+    <div id="congrats-message" class="congrats-message" style="display: none;">
+      🎉 Bravo !<br>✨✨✨
+    </div>
   </div>
 
   <footer>
     <h3>Publicité</h3>
     <img src="Files/PUB.png" alt="Publicité" class="pub-image">
   </footer>
-
-  <script src="script.js"></script>
-</body>
-</html>
