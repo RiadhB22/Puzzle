@@ -1,112 +1,95 @@
-<script>
-    const board = document.getElementById("puzzle-board");
-    const startBtn = document.getElementById("start-button");
-    const restartBtn = document.getElementById("restart-button");
-    const nextLevelBtn = document.getElementById("next-level-button");
-    const playerNameInput = document.getElementById("player-name");
-    const playerDisplay = document.getElementById("player-display");
-    const playerInfo = document.getElementById("player-info");
-    const levelControls = document.querySelector(".level-controls");
-    const startSection = document.getElementById("start-section");
-    const congratsMessage = document.getElementById("congrats-message");
-    const scoreDisplay = document.getElementById("score");
+const container = document.getElementById("puzzle-container");
+const message = document.getElementById("message");
+const clickSound = document.getElementById("click-sound");
+const swapSound = document.getElementById("swap-sound");
+const winSound = document.getElementById("win-sound");
 
-    const gridSize = 3;
-    const imageSrc = "Files/cat.jpg";
-    let pieces = [];
-    let firstClick = null;
-    let score = 0;
+const gridSize = 3;
+const pieces = [];
 
-    function createPuzzlePieces() {
-      board.innerHTML = "";
-      pieces = [];
-      for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize; col++) {
-          const piece = document.createElement("img");
-          piece.classList.add("puzzle-piece");
-          const x = (100 / (gridSize - 1)) * col;
-          const y = (100 / (gridSize - 1)) * row;
-          piece.style.objectPosition = `-${x}% -${y}%`;
-          piece.dataset.index = row * gridSize + col;
-          piece.src = imageSrc;
-          pieces.push(piece);
-        }
-      }
-
-      shuffleArray(pieces);
-      pieces.forEach(p => board.appendChild(p));
+function shuffleArray(array) {
+  let newArr = array.slice();
+  do {
+    for (let i = newArr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
     }
+  } while (newArr.every((val, index) => val === index));
+  return newArr;
+}
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
+function createPuzzle() {
+  container.innerHTML = "";
+  let indexes = Array.from({ length: gridSize * gridSize }, (_, i) => i);
+  let shuffled = shuffleArray(indexes);
 
-    function checkWin() {
-      for (let i = 0; i < pieces.length; i++) {
-        if (parseInt(pieces[i].dataset.index) !== i) return false;
-      }
-      return true;
-    }
+  shuffled.forEach((index, i) => {
+    const piece = document.createElement("button");
+    piece.classList.add("piece");
+    piece.style.backgroundImage = "url('files/image1.jpg')";
+    piece.style.backgroundPosition = `-${(index % gridSize) * 100}px -${Math.floor(index / gridSize) * 100}px`;
+    piece.dataset.index = index;
+    piece.dataset.current = i;
+    piece.addEventListener("click", () => handlePieceClick(piece));
+    container.appendChild(piece);
+    pieces.push(piece);
+  });
+}
 
-    function showCongrats() {
-      congratsMessage.style.display = "block";
-      nextLevelBtn.disabled = false;
-    }
+let firstPiece = null;
 
-    function swapPieces(p1, p2) {
-      const temp = document.createElement("div");
-      board.replaceChild(temp, p1);
-      board.replaceChild(p1, p2);
-      board.replaceChild(p2, temp);
-    }
+function handlePieceClick(piece) {
+  clickSound.play();
+  if (!firstPiece) {
+    firstPiece = piece;
+    piece.style.outline = "3px solid #3498db";
+  } else if (piece !== firstPiece) {
+    swapSound.play();
+    piece.style.outline = "3px solid #e74c3c";
 
-    board.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("puzzle-piece") || congratsMessage.style.display !== "none") return;
-      if (!firstClick) {
-        firstClick = e.target;
-        e.target.style.border = "2px solid red";
-      } else {
-        const secondClick = e.target;
-        firstClick.style.border = "none";
-        if (firstClick !== secondClick) {
-          swapPieces(firstClick, secondClick);
-          const children = Array.from(board.children);
-          children.forEach((child, idx) => child.dataset.indexCurrent = idx);
-          score += parseInt(firstClick.dataset.index) === children.indexOf(firstClick) ? 5 : -1;
-          scoreDisplay.textContent = `Score : ${score}`;
-        }
-        firstClick = null;
+    setTimeout(() => {
+      swapPieces(firstPiece, piece);
+      firstPiece.style.outline = "";
+      piece.style.outline = "";
+      firstPiece = null;
+      checkWin();
+    }, 400);
+  }
+}
 
-        if (checkWin()) {
-          showCongrats();
-        }
-      }
-    });
+function swapPieces(p1, p2) {
+  const temp = p1.dataset.index;
+  p1.dataset.index = p2.dataset.index;
+  p2.dataset.index = temp;
 
-    startBtn.onclick = () => {
-      const name = playerNameInput.value.trim();
-      if (!name) return;
-      playerDisplay.textContent = `👤 ${name}`;
-      startSection.style.display = "none";
-      playerInfo.style.display = "flex";
-      levelControls.style.display = "flex";
-      score = 0;
-      scoreDisplay.textContent = "Score : 0";
-      createPuzzlePieces();
-    };
+  p1.style.backgroundPosition = getPosition(p1.dataset.index);
+  p2.style.backgroundPosition = getPosition(p2.dataset.index);
+}
 
-    restartBtn.onclick = () => {
-      score = 0;
-      scoreDisplay.textContent = "Score : 0";
-      congratsMessage.style.display = "none";
-      nextLevelBtn.disabled = true;
-      createPuzzlePieces();
-    };
+function getPosition(index) {
+  const x = (index % gridSize) * 100;
+  const y = Math.floor(index / gridSize) * 100;
+  return `-${x}px -${y}px`;
+}
 
-    nextLevelBtn.onclick = () => {
-      alert("Niveau 2 non encore disponible");
-    };
-  </script>
+function checkWin() {
+  const correct = pieces.every((p, i) => parseInt(p.dataset.index) === i);
+  if (correct) {
+    winSound.play();
+    message.style.display = "block";
+    container.style.pointerEvents = "none";
+
+    setTimeout(() => {
+      message.style.display = "none";
+      container.style.pointerEvents = "auto";
+      nextLevel(); // À personnaliser
+    }, 3000);
+  }
+}
+
+function nextLevel() {
+  alert("🚀 Passage au niveau suivant (non encore implémenté) !");
+  // Tu peux charger une nouvelle image ici pour le niveau 2
+}
+
+createPuzzle();
