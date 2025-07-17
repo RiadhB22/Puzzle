@@ -5,10 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jeu Puzzle - Niveau 1</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .congrats-message {
+      font-size: 3em;
+      font-weight: bold;
+      color: #4CAF50;
+      text-align: center;
+      animation: pulse 1s infinite;
+      margin-top: 20px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1 class="responsive-title">🧩 Jeu Puzzle 🧩 Niveau 1</h1>
+    <h1 class="responsive-title">🧩 Jeu Puzzle - Niveau 1</h1>
   </header>
 
   <div class="top-bar">
@@ -41,6 +57,10 @@
     <img src="Files/PUB.png" alt="Publicité" class="pub-image">
   </footer>
 
+  <audio id="click-sound" src="Files/click.mp3"></audio>
+  <audio id="swap-sound" src="Files/swap.mp3"></audio>
+  <audio id="win-sound" src="Files/win.mp3"></audio>
+
   <script>
     const board = document.getElementById("puzzle-board");
     const startBtn = document.getElementById("start-button");
@@ -55,6 +75,9 @@
     const scoreDisplay = document.getElementById("score");
     const movesDisplay = document.getElementById("moves");
     const timerDisplay = document.getElementById("timer");
+    const clickSound = document.getElementById("click-sound");
+    const swapSound = document.getElementById("swap-sound");
+    const winSound = document.getElementById("win-sound");
 
     const gridSize = 3;
     const imageSrc = "Files/cat.jpg";
@@ -80,7 +103,9 @@
         piece.dataset.correctIndex = i;
         pieces.push(piece);
       }
-      shuffleArray(pieces);
+      do {
+        shuffleArray(pieces);
+      } while (pieces.every((p, i) => parseInt(p.dataset.correctIndex) === i));
       pieces.forEach(p => board.appendChild(p));
     }
 
@@ -99,6 +124,7 @@
     function showCongrats() {
       clearInterval(interval);
       congratsMessage.style.display = "block";
+      winSound.play();
       nextLevelBtn.disabled = false;
     }
 
@@ -111,6 +137,7 @@
 
     board.addEventListener("click", (e) => {
       if (!e.target.classList.contains("puzzle-piece") || congratsMessage.style.display !== "none") return;
+      clickSound.play();
       if (!firstClick) {
         firstClick = e.target;
         firstClick.classList.add("selected");
@@ -119,6 +146,7 @@
         firstClick.classList.remove("selected");
         if (firstClick !== secondClick) {
           swapPieces(firstClick, secondClick);
+          swapSound.play();
           const children = Array.from(board.children);
           score += parseInt(firstClick.dataset.correctIndex) === children.indexOf(firstClick) ? 5 : -1;
           moves++;
