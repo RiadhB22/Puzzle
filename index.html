@@ -2,13 +2,37 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>🧩 Puzzle Simple</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Puzzle : Niveau 1</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🧩 Puzzle Simple</h1>
-  <div id="puzzle"></div>
-  <div id="message">🎉 Bravo ! Puzzle réussi 🎉</div>
+  <h1>🧩 Puzzle : Niveau 1 🧩</h1>
+
+  <div id="startScreen">
+    <input type="text" id="playerNameInput" placeholder="Entrez votre nom" />
+    <button onclick="startGame()">Commencer</button>
+  </div>
+
+  <div id="gameInfo" class="hidden">
+    <div class="info">
+      👤 Joueur : <span id="playerName">-</span> |
+      🧠 Score : <span id="score">0</span> |
+      🔁 Coups : <span id="moves">0</span> |
+      ⏱️ <span id="timer">00:00</span>
+    </div>
+  </div>
+
+  <div id="puzzleContainer" class="hidden"></div>
+
+  <div id="message" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
+
+  <img src="files/PUB.png" alt="PUB" id="pub">
+
+  <audio id="clickSound" src="files/click.mp3"></audio>
+  <audio id="swapSound" src="files/swap.mp3"></audio>
+  <audio id="winSound" src="files/win.mp3"></audio>
+
   <script src="script.js"></script>
 </body>
 </html>
