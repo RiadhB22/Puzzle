@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <h1 class="responsive-title">🧩 Jeu Puzzle - Niveau 1</h1>
+    <h1 class="responsive-title">🧩 Puzzle Game - Level 1</h1>
   </header>
 
   <div class="top-bar">
@@ -38,5 +38,115 @@
     <h3>Publicité</h3>
     <img src="Files/PUB.png" alt="Publicité" class="pub-image">
   </footer>
+
+  <script>
+    const board = document.getElementById("puzzle-board");
+    const startBtn = document.getElementById("start-button");
+    const restartBtn = document.getElementById("restart-button");
+    const nextLevelBtn = document.getElementById("next-level-button");
+    const playerNameInput = document.getElementById("player-name");
+    const playerDisplay = document.getElementById("player-display");
+    const playerInfo = document.getElementById("player-info");
+    const levelControls = document.querySelector(".level-controls");
+    const startSection = document.getElementById("start-section");
+    const congratsMessage = document.getElementById("congrats-message");
+    const scoreDisplay = document.getElementById("score");
+
+    const gridSize = 3;
+    const imageSrc = "Files/cat.jpg";
+    let pieces = [];
+    let firstClick = null;
+    let score = 0;
+
+    function createPuzzlePieces() {
+      board.innerHTML = "";
+      pieces = [];
+      const total = gridSize * gridSize;
+      for (let i = 0; i < total; i++) {
+        const piece = document.createElement("div");
+        piece.className = "puzzle-piece";
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        piece.style.backgroundImage = `url(${imageSrc})`;
+        piece.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
+        piece.style.backgroundPosition = `-${col * 100}% -${row * 100}%`;
+        piece.dataset.correctIndex = i;
+        pieces.push(piece);
+      }
+      shuffleArray(pieces);
+      pieces.forEach(p => board.appendChild(p));
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function checkWin() {
+      const children = Array.from(board.children);
+      return children.every((child, i) => parseInt(child.dataset.correctIndex) === i);
+    }
+
+    function showCongrats() {
+      congratsMessage.style.display = "block";
+      nextLevelBtn.disabled = false;
+    }
+
+    function swapPieces(p1, p2) {
+      const temp = document.createElement("div");
+      board.replaceChild(temp, p1);
+      board.replaceChild(p1, p2);
+      board.replaceChild(p2, temp);
+    }
+
+    board.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("puzzle-piece") || congratsMessage.style.display !== "none") return;
+      if (!firstClick) {
+        firstClick = e.target;
+        firstClick.classList.add("selected");
+      } else {
+        const secondClick = e.target;
+        firstClick.classList.remove("selected");
+        if (firstClick !== secondClick) {
+          swapPieces(firstClick, secondClick);
+          const children = Array.from(board.children);
+          score += parseInt(firstClick.dataset.correctIndex) === children.indexOf(firstClick) ? 5 : -1;
+          scoreDisplay.textContent = `Score : ${score}`;
+        }
+        firstClick = null;
+        if (checkWin()) {
+          showCongrats();
+        }
+      }
+    });
+
+    startBtn.onclick = () => {
+      const name = playerNameInput.value.trim();
+      if (!name) return;
+      playerDisplay.textContent = `👤 ${name}`;
+      startSection.style.display = "none";
+      playerInfo.style.display = "flex";
+      levelControls.style.display = "flex";
+      score = 0;
+      scoreDisplay.textContent = "Score : 0";
+      congratsMessage.style.display = "none";
+      nextLevelBtn.disabled = true;
+      createPuzzlePieces();
+    };
+
+    restartBtn.onclick = () => {
+      score = 0;
+      scoreDisplay.textContent = "Score : 0";
+      congratsMessage.style.display = "none";
+      nextLevelBtn.disabled = true;
+      createPuzzlePieces();
+    };
+
+    nextLevelBtn.onclick = () => {
+      alert("Niveau 2 non encore disponible");
+    };
+  </script>
 </body>
 </html>
