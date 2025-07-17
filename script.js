@@ -1,4 +1,4 @@
-const image = "files/cat.jpg"; // choisis ici : cat.jpg, cat2.jpg ou PUB.png
+const image = "files/cat.jpg"; // tu peux changer par cat2.jpg ou PUB.png
 const puzzle = document.getElementById("puzzle");
 const message = document.getElementById("message");
 const size = 3;
@@ -25,58 +25,58 @@ function createPuzzle() {
   }
 
   if (isSolved()) {
-    puzzle.innerHTML = "";
-    pieces = [];
+    resetPuzzle();
     createPuzzle();
   }
 }
 
-let first = null;
-
 function handleClick(piece) {
-  if (!first) {
-    first = piece;
+  if (!firstPiece) {
+    firstPiece = piece;
     piece.style.border = "2px solid red";
-  } else if (piece !== first) {
-    swap(first, piece);
-    first.style.border = "";
-    first = null;
+  } else if (piece !== firstPiece) {
+    swapPieces(firstPiece, piece);
+    firstPiece.style.border = "";
+    firstPiece = null;
+
     if (isSolved()) {
-      message.style.display = "block";
-      enlargeImage();
+      showVictory();
     }
   }
 }
 
-function swap(p1, p2) {
-  const pos1 = p1.style.backgroundPosition;
-  const pos2 = p2.style.backgroundPosition;
-  const index1 = p1.dataset.index;
-  const index2 = p2.dataset.index;
+function swapPieces(p1, p2) {
+  const tempPos = p1.style.backgroundPosition;
+  const tempIndex = p1.dataset.index;
 
-  p1.style.backgroundPosition = pos2;
-  p2.style.backgroundPosition = pos1;
-  p1.dataset.index = index2;
-  p2.dataset.index = index1;
+  p1.style.backgroundPosition = p2.style.backgroundPosition;
+  p1.dataset.index = p2.dataset.index;
+
+  p2.style.backgroundPosition = tempPos;
+  p2.dataset.index = tempIndex;
 }
 
 function isSolved() {
   return pieces.every((p, i) => parseInt(p.dataset.index) === i);
 }
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
+function resetPuzzle() {
+  puzzle.innerHTML = "";
+  pieces = [];
+  firstPiece = null;
+}
+
+function showVictory() {
+  message.style.display = "block";
+  puzzle.innerHTML = `<img src="${image}" width="300" height="300">`;
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
-function enlargeImage() {
-  puzzle.innerHTML = "";
-  const img = document.createElement("img");
-  img.src = image;
-  img.style.width = "300px";
-  puzzle.appendChild(img);
-}
-
+let firstPiece = null;
 createPuzzle();
