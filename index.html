@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <h1 class="responsive-title">🧩 Puzzle Game - Level 1</h1>
+    <h1 class="responsive-title">🧩 Jeu Puzzle 🧩 Niveau 1</h1>
   </header>
 
   <div class="top-bar">
@@ -18,6 +18,8 @@
     </div>
     <div class="player-info" id="player-info" style="display:none">
       <span id="score">Score : 0</span>
+      <span id="moves">Coups : 0</span>
+      <span id="timer">🕒 0:00</span>
       <span id="player-display"></span>
     </div>
     <div class="level-controls" style="display:none">
@@ -51,12 +53,17 @@
     const startSection = document.getElementById("start-section");
     const congratsMessage = document.getElementById("congrats-message");
     const scoreDisplay = document.getElementById("score");
+    const movesDisplay = document.getElementById("moves");
+    const timerDisplay = document.getElementById("timer");
 
     const gridSize = 3;
     const imageSrc = "Files/cat.jpg";
     let pieces = [];
     let firstClick = null;
     let score = 0;
+    let moves = 0;
+    let timer = 0;
+    let interval;
 
     function createPuzzlePieces() {
       board.innerHTML = "";
@@ -90,6 +97,7 @@
     }
 
     function showCongrats() {
+      clearInterval(interval);
       congratsMessage.style.display = "block";
       nextLevelBtn.disabled = false;
     }
@@ -113,7 +121,9 @@
           swapPieces(firstClick, secondClick);
           const children = Array.from(board.children);
           score += parseInt(firstClick.dataset.correctIndex) === children.indexOf(firstClick) ? 5 : -1;
+          moves++;
           scoreDisplay.textContent = `Score : ${score}`;
+          movesDisplay.textContent = `Coups : ${moves}`;
         }
         firstClick = null;
         if (checkWin()) {
@@ -121,6 +131,18 @@
         }
       }
     });
+
+    function startTimer() {
+      clearInterval(interval);
+      timer = 0;
+      timerDisplay.textContent = "🕒 0:00";
+      interval = setInterval(() => {
+        timer++;
+        const minutes = Math.floor(timer / 60);
+        const seconds = timer % 60;
+        timerDisplay.textContent = `🕒 ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
 
     startBtn.onclick = () => {
       const name = playerNameInput.value.trim();
@@ -130,18 +152,24 @@
       playerInfo.style.display = "flex";
       levelControls.style.display = "flex";
       score = 0;
+      moves = 0;
       scoreDisplay.textContent = "Score : 0";
+      movesDisplay.textContent = "Coups : 0";
       congratsMessage.style.display = "none";
       nextLevelBtn.disabled = true;
       createPuzzlePieces();
+      startTimer();
     };
 
     restartBtn.onclick = () => {
       score = 0;
+      moves = 0;
       scoreDisplay.textContent = "Score : 0";
+      movesDisplay.textContent = "Coups : 0";
       congratsMessage.style.display = "none";
       nextLevelBtn.disabled = true;
       createPuzzlePieces();
+      startTimer();
     };
 
     nextLevelBtn.onclick = () => {
