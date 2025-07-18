@@ -1,94 +1,55 @@
-* {
-  box-sizing: border-box;
-  font-family: sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  background-color: #f9f9f9;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff;
   text-align: center;
-  padding: 10px;
 }
 
 .container {
-  max-width: 600px;
-  margin: auto;
+  padding: 20px;
 }
 
-h1 {
-  margin: 10px 0;
-  font-size: 1.5em;
-}
-
-.player-input {
-  margin: 10px 0;
-}
-
-input[type="text"] {
+input, button {
+  font-size: 1em;
   padding: 8px;
-  width: 60%;
-}
-
-button {
-  padding: 8px 12px;
   margin: 5px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
-button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-
-.stats {
-  margin: 10px 0;
-}
-
-.puzzle-grid {
-  margin: 10px auto;
+#puzzle-container {
+  margin: 20px auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  width: 90vw;
+  max-width: 400px;
+  aspect-ratio: 1 / 1;
   gap: 2px;
-  width: 100%;
-  max-width: 100%;
 }
 
 .piece {
   width: 100%;
-  aspect-ratio: 1;
-  background-size: 300% 300%;
-  border: 1px solid #ccc;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-.win-message {
+.message {
   font-size: 1.5em;
   color: green;
-  margin-top: 15px;
-  animation: blink 1s infinite;
+  font-weight: bold;
+  animation: bounce 1s infinite alternate;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+@keyframes bounce {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
 }
 
-.pub-zone {
-  margin-top: 15px;
-}
-
-.pub-zone img {
-  width: 100%;
+.pub {
+  margin-top: 20px;
   max-width: 100%;
   height: auto;
 }
 
-footer {
-  margin-top: 20px;
-  font-size: 0.8em;
-  color: gray;
+.hidden {
+  display: none;
 }
