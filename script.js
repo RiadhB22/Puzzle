@@ -1,101 +1,158 @@
-const container = document.getElementById("puzzle-container");
+const puzzleBoard = document.getElementById("puzzle-board");
 const message = document.getElementById("message");
-const scoreSpan = document.getElementById("score");
-const movesSpan = document.getElementById("moves");
-const timerSpan = document.getElementById("timer");
+const timerEl = document.getElementById("timer");
+const scoreEl = document.getElementById("score");
+const movesEl = document.getElementById("moves");
+const displayName = document.getElementById("display-name");
+const startBtn = document.getElementById("start-btn");
+const playerNameInput = document.getElementById("player-name");
+const startScreen = document.getElementById("start-screen");
+const gameUI = document.getElementById("game-ui");
+const replayBtn = document.getElementById("replay-btn");
+const nextBtn = document.getElementById("next-btn");
 
 let pieces = [];
-let firstPiece = null;
+let emptyIndex;
 let moves = 0;
 let score = 0;
-let timer = 0;
-let interval;
+let startTime;
+let timerInterval;
+let selectedPiece = null;
 
-function createPuzzle() {
-  const indices = [...Array(9).keys()];
+const imageURL = "files/cat.jpg"; // assure-toi que ce fichier existe
+const size = 3; // 3x3 puzzle
 
-  // Mélange en s'assurant qu'aucune pièce ne soit à sa position correcte
-  let shuffled;
-  do {
-    shuffled = indices.slice().sort(() => Math.random() - 0.5);
-  } while (shuffled.some((val, i) => val === i));
+function startGame() {
+  const name = playerNameInput.value.trim();
+  if (!name) {
+    alert("Entrez votre nom pour commencer !");
+    return;
+  }
 
-  container.innerHTML = "";
+  displayName.textContent = name;
+  startScreen.classList.add("hidden");
+  gameUI.classList.remove("hidden");
 
-  shuffled.forEach((index) => {
-    const piece = document.createElement("div");
-    piece.className = "piece";
-    piece.dataset.index = index;
-    piece.style.backgroundImage = "url('files/cat.jpg')";
-    const row = Math.floor(index / 3);
-    const col = index % 3;
-    piece.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
-    container.appendChild(piece);
-  });
+  resetGame();
+}
 
-  pieces = Array.from(document.getElementsByClassName("piece"));
-  pieces.forEach(p => p.addEventListener("click", () => handleClick(p)));
+function resetGame() {
+  clearInterval(timerInterval);
+  startTime = new Date();
+  timerInterval = setInterval(updateTimer, 1000);
 
-  // Reset
   moves = 0;
   score = 0;
-  timer = 0;
-  updateDisplay();
-  clearInterval(interval);
-  interval = setInterval(updateTimer, 1000);
-  message.style.display = "none";
-}
+  updateScoreMoves();
 
-function handleClick(piece) {
-  if (!firstPiece) {
-    firstPiece = piece;
-    piece.style.outline = "2px solid blue";
-  } else if (piece !== firstPiece) {
-    piece.style.outline = "2px solid red";
-    swap(firstPiece, piece);
-    firstPiece.style.outline = "";
-    piece.style.outline = "";
-    firstPiece = null;
-    moves++;
-    checkWin();
-    updateDisplay();
+  pieces = [];
+  puzzleBoard.innerHTML = "";
+  for (let i = 0; i < size * size; i++) {
+    pieces.push(i);
   }
-}
 
-function swap(p1, p2) {
-  const tempIndex = p1.dataset.index;
-  p1.dataset.index = p2.dataset.index;
-  p2.dataset.index = tempIndex;
+  do {
+    shuffleArray(pieces);
+  } while (!ensureNotSolved());
 
-  const tempStyle = p1.style.backgroundPosition;
-  p1.style.backgroundPosition = p2.style.backgroundPosition;
-  p2.style.backgroundPosition = tempStyle;
-}
-
-function checkWin() {
-  let correct = 0;
-  pieces.forEach((piece, i) => {
-    if (parseInt(piece.dataset.index) === i) correct++;
+  pieces.forEach((val, i) => {
+    const div = document.createElement("div");
+    div.classList.add("piece");
+    div.dataset.index = i;
+    div.dataset.value = val;
+    setPieceBackground(div, val);
+    div.addEventListener("click", () => onPieceClick(div));
+    puzzleBoard.appendChild(div);
   });
 
-  score = correct;
+  message.classList.add("hidden");
+}
 
-  if (correct === 9) {
-    clearInterval(interval);
-    message.style.display = "block";
+function setPieceBackground(div, index) {
+  const x = index % size;
+  const y = Math.floor(index / size);
+  div.style.backgroundImage = `url(${imageURL})`;
+  div.style.backgroundPosition = `${(-x * 100) / (size - 1)}% ${(-y * 100) / (size - 1)}%`;
+}
+
+function onPieceClick(div) {
+  if (message.classList.contains("hidden") === false) return;
+
+  playSound("click");
+
+  if (!selectedPiece) {
+    selectedPiece = div;
+    div.style.border = "2px solid red";
+  } else {
+    if (selectedPiece === div) return;
+
+    playSound("swap");
+    swapPieces(selectedPiece, div);
+    selectedPiece.style.border = "1px solid #ccc";
+    selectedPiece = null;
+
+    moves++;
+    updateScoreMoves();
+
+    if (checkWin()) {
+      clearInterval(timerInterval);
+      message.classList.remove("hidden");
+      playSound("win");
+    }
   }
+}
+
+function swapPieces(div1, div2) {
+  const val1 = div1.dataset.value;
+  const val2 = div2.dataset.value;
+
+  div1.dataset.value = val2;
+  div2.dataset.value = val1;
+
+  setPieceBackground(div1, val2);
+  setPieceBackground(div2, val1);
+}
+
+function updateScoreMoves() {
+  scoreEl.textContent = score;
+  movesEl.textContent = moves;
 }
 
 function updateTimer() {
-  timer++;
-  const min = String(Math.floor(timer / 60)).padStart(2, "0");
-  const sec = String(timer % 60).padStart(2, "0");
-  timerSpan.textContent = `${min}:${sec}`;
+  const now = new Date();
+  const diff = Math.floor((now - startTime) / 1000);
+  const min = String(Math.floor(diff / 60)).padStart(2, "0");
+  const sec = String(diff % 60).padStart(2, "0");
+  timerEl.textContent = `${min}:${sec}`;
 }
 
-function updateDisplay() {
-  scoreSpan.textContent = score;
-  movesSpan.textContent = moves;
+function checkWin() {
+  const all = document.querySelectorAll(".piece");
+  for (let i = 0; i < all.length; i++) {
+    if (parseInt(all[i].dataset.value) !== i) return false;
+  }
+  return true;
 }
 
-window.onload = createPuzzle;
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function ensureNotSolved() {
+  return pieces.some((val, index) => val !== index);
+}
+
+function playSound(type) {
+  const sound = new Audio();
+  if (type === "click") sound.src = "files/click.mp3";
+  else if (type === "swap") sound.src = "files/swap.mp3";
+  else if (type === "win") sound.src = "files/win.mp3";
+  sound.play();
+}
+
+startBtn.addEventListener("click", startGame);
+replayBtn.addEventListener("click", resetGame);
+nextBtn.addEventListener("click", () => alert("Niveau 2 en cours de développement !"));
