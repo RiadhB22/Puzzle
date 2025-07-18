@@ -1,90 +1,94 @@
-body {
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f0f0f0;
+  padding: 0;
+}
+
+body {
+  background-color: #f9f9f9;
   text-align: center;
+  padding: 10px;
 }
 
 .container {
   max-width: 600px;
   margin: auto;
-  padding: 10px;
 }
 
 h1 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  margin: 10px 0;
+  font-size: 1.5em;
+}
+
+.player-input {
+  margin: 10px 0;
 }
 
 input[type="text"] {
-  padding: 10px;
-  font-size: 1rem;
+  padding: 8px;
   width: 60%;
-  max-width: 300px;
 }
 
 button {
-  padding: 10px 20px;
-  margin: 10px;
-  font-size: 1rem;
+  padding: 8px 12px;
+  margin: 5px;
   border: none;
-  border-radius: 8px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
+  border-radius: 8px;
   cursor: pointer;
 }
 
 button:disabled {
-  background-color: #ccc;
+  background-color: #aaa;
   cursor: not-allowed;
 }
 
-.info-bar {
-  margin-bottom: 10px;
-  font-weight: bold;
+.stats {
+  margin: 10px 0;
 }
 
-.puzzle-board {
+.puzzle-grid {
+  margin: 10px auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
+  width: 100%;
   max-width: 100%;
-  margin: auto;
-  background: #ddd;
 }
 
 .piece {
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1;
   background-size: 300% 300%;
-  cursor: pointer;
-  border: 1px solid #999;
+  border: 1px solid #ccc;
 }
 
-.hidden {
-  display: none;
-}
-
-#message {
-  margin: 20px 0;
-  font-size: 1.3rem;
-  font-weight: bold;
+.win-message {
+  font-size: 1.5em;
   color: green;
-  animation: pop 1s infinite alternate;
+  margin-top: 15px;
+  animation: blink 1s infinite;
 }
 
-@keyframes pop {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.2); }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.pub-zone {
+  margin-top: 15px;
 }
 
 .pub-zone img {
-  margin-top: 15px;
+  width: 100%;
   max-width: 100%;
+  height: auto;
 }
 
 footer {
   margin-top: 20px;
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.8em;
+  color: gray;
 }
