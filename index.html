@@ -2,31 +2,35 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🧩 Puzzle : Niveau 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧩 Puzzle : Niveau 1 🧩</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="start-screen">
-    <h1>🧩 Puzzle : Niveau 1🧩 </h1>
-    <input type="text" id="player-name" placeholder="Entrez votre nom" />
-    <button id="start-btn">Commencer</button>
+    <h1>🧩 Puzzle : Niveau 1 🧩</h1>
+    <input type="text" id="player-name" placeholder="Entrez votre nom..." />
+    <button id="start-button">Commencer</button>
   </div>
 
-  <div id="game-ui" class="hidden">
-    <div id="header">
-      👤 Joueur : <span id="display-name">-</span> |
-      🧠 Score : <span id="score">0</span> |
-      🔁 Coups : <span id="moves">0</span> |
-      ⏱️ <span id="timer">00:00</span>
+  <div id="game-container" class="hidden">
+    <header>
+      <span>👤 Joueur : <span id="display-name">-</span></span>
+      <span>🧠 Score : <span id="score">0</span></span>
+      <span>🔁 Coups : <span id="moves">0</span></span>
+      <span>⏱️ <span id="timer">00:00</span></span>
+    </header>
+
+    <div id="puzzle-container"></div>
+
+    <div id="win-message" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
+
+    <div id="buttons" class="hidden">
+      <button onclick="restartGame()">🔄 Rejouer</button>
+      <button onclick="nextLevel()">⏭️ Niveau 2</button>
     </div>
-    <div id="puzzle-board"></div>
-    <div id="message" class="hidden">
-      🎉 Bravo ! Puzzle réussi 🎉<br>
-      <button id="replay-btn">🔁 Rejouer</button>
-      <button id="next-btn">➡️ Niveau 2</button>
-    </div>
-    <img src="files/PUB.png" id="pub" alt="PUB" />
+
+    <img id="pub" src="files/PUB.png" alt="Publicité" />
   </div>
 
   <script src="script.js"></script>
