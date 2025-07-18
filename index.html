@@ -2,35 +2,34 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Puzzle : Niveau 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🧩 Puzzle : Niveau 1 🧩</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>🧩 Puzzle : Niveau 1 🧩</h1>
+  <h1>🧩 Puzzle : Niveau 1 🧩</h1>
 
-    <div class="start-screen">
-      <input type="text" id="playerName" placeholder="Entrez votre nom" />
-      <button id="startButton">Commencer</button>
-    </div>
+  <div id="start-screen">
+    <input type="text" id="playerName" placeholder="Entrez votre nom..." />
+    <button onclick="startGame()">Commencer</button>
+  </div>
 
-    <div class="game-ui hidden">
-      <div class="infos">
-        👤 Joueur : <span id="name">-</span> |
-        🧠 Score : <span id="score">0</span> |
-        🔁 Coups : <span id="moves">0</span> |
-        ⏱️ <span id="timer">00:00</span>
-      </div>
-      <div id="puzzle-container"></div>
-      <div class="message hidden" id="winMessage">🎉 Bravo ! Puzzle réussi 🎉</div>
-      <div class="buttons">
-        <button id="replayButton">🔄 Rejouer</button>
-        <button id="nextLevelButton" disabled>➡️ Niveau 2</button>
-      </div>
-      <img src="Puzzle/Files/PUB.png" alt="pub" class="pub" />
+  <div id="game-info" style="display:none;">
+    <div class="info-bar">
+      👤 Joueur : <span id="nameDisplay">-</span> |
+      🧠 Score : <span id="score">0</span> |
+      🔁 Coups : <span id="moves">0</span> |
+      ⏱️ <span id="timer">00:00</span>
     </div>
   </div>
-  <script src="script.js"></script>
-</body>
-</html>
+
+  <div id="puzzle-container"></div>
+
+  <div id="victory-message">🎉 Bravo ! Puzzle réussi 🎉</div>
+
+  <div class="buttons">
+    <button onclick="restartGame()">🔁 Rejouer</button>
+    <button id="nextLevelBtn" onclick="goToNextLevel()" disabled>⏭️ Niveau 2</button>
+  </div>
+
+  <img
