@@ -1,75 +1,90 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  text-align: center;
   margin: 0;
   padding: 0;
-  text-align: center;
+  background: #f8f8f8;
 }
 
-#start-screen {
-  padding: 50px;
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
 }
 
-input, button {
+input[type="text"] {
   padding: 10px;
+  font-size: 16px;
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.info-bar {
+  margin: 10px 0;
   font-size: 18px;
-  margin-top: 10px;
 }
 
-#game-container.hidden {
-  display: none;
-}
-
-header {
-  display: flex;
-  justify-content: space-around;
-  background: #fff;
-  padding: 10px;
-  font-weight: bold;
-  flex-wrap: wrap;
-}
-
-#puzzle-container {
+#puzzle {
   display: grid;
   grid-template-columns: repeat(3, 100px);
-  grid-gap: 5px;
+  grid-template-rows: repeat(3, 100px);
+  gap: 5px;
   justify-content: center;
   margin: 20px auto;
 }
 
-.piece {
+.tile {
   width: 100px;
   height: 100px;
   background-size: 300px 300px;
-  border: 1px solid #ccc;
   cursor: pointer;
+  border: 1px solid #ccc;
 }
 
 #win-message {
   font-size: 24px;
+  margin: 20px 0;
   color: green;
-  animation: blink 1s infinite;
+  animation: bounce 1s infinite;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-#buttons {
-  margin-top: 20px;
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 #pub {
-  margin-top: 30px;
-  max-width: 100%;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 300px;
 }
 
-@media screen and (max-width: 600px) {
-  #puzzle-container {
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  #puzzle {
     grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
   }
-  .piece {
+
+  .tile {
     width: 80px;
     height: 80px;
     background-size: 240px 240px;
