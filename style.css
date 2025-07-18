@@ -1,119 +1,93 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background: #f9f9f9;
-  color: #333;
-  text-align: center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
 }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 1rem;
+body {
+    background: #f7f7f7;
+    text-align: center;
+    padding: 1rem;
 }
 
 h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+    font-size: 2rem;
+    margin-bottom: 1rem;
 }
 
-#start-screen input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  width: 70%;
-  max-width: 300px;
-  margin-bottom: 1rem;
+input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
 }
 
-#start-screen button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+button {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    margin: 0.5rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #00aaff;
+    color: white;
+    cursor: pointer;
 }
 
-.stats {
-  margin-bottom: 1rem;
-  font-size: 1rem;
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-#puzzle-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  max-width: 100%;
-  margin: auto;
-  aspect-ratio: 1 / 1;
+.top-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
 }
 
-.piece {
-  background-size: 300%;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  transition: transform 0.2s;
-  border: 1px solid #ccc;
+.puzzle {
+    display: grid;
+    gap: 3px;
+    max-width: 95vw;
+    max-height: 95vw;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
 }
 
-.piece:hover {
-  transform: scale(1.03);
+.tile {
+    background-size: 300% 300%;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    transition: 0.2s;
 }
 
-#win-message {
-  font-size: 1.5rem;
-  color: green;
-  margin-top: 1rem;
-  animation: blink 1s infinite alternate;
+.tile.empty {
+    background: #e0e0e0;
 }
 
-@keyframes blink {
-  from { opacity: 1; }
-  to { opacity: 0.5; }
+#message {
+    margin: 1rem auto;
+    font-size: 2rem;
+    color: green;
+    animation: pop 0.6s ease;
+    display: none;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .buttons {
-  margin-top: 1rem;
+    margin-top: 1rem;
 }
 
-.buttons button {
-  padding: 0.5rem 1rem;
-  margin: 0.2rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  background-color: #008cba;
-  color: white;
-  cursor: pointer;
-}
-
-.buttons button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-
-.pub img {
-  width: 100%;
-  max-width: 400px;
-  margin-top: 1rem;
-}
-
-.hidden {
-  display: none;
-}
-
-/* Responsive */
-@media screen and (max-width: 600px) {
-  #puzzle-container {
-    width: 100%;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .stats {
-    font-size: 0.9rem;
-  }
-
-  .buttons button {
-    font-size: 0.9rem;
-  }
+.pub {
+    margin-top: 1rem;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
