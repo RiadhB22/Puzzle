@@ -18,7 +18,6 @@ const winSound = new Audio("files/win.mp3");
 
 let size = 3;
 let pieces = [];
-let emptyIndex = -1;
 let moves = 0;
 let timer;
 let seconds = 0;
@@ -35,7 +34,7 @@ startBtn.addEventListener("click", () => {
 
 replayBtn.addEventListener("click", startGame);
 nextBtn.addEventListener("click", () => {
-  size = 4; // Niveau 2 : puzzle 4x4
+  size = 4;
   startGame();
 });
 
@@ -52,65 +51,54 @@ function startGame() {
   timerSpan.textContent = "00:00";
 
   const indexes = Array.from({ length: size * size }, (_, i) => i);
-  shuffle(indexes);
-
-  while (isSolved(indexes)) {
+  do {
     shuffle(indexes);
-  }
+  } while (isSolved(indexes)); // garantir que ce n’est pas déjà résolu
 
-  for (let i = 0; i < size * size; i++) {
+  indexes.forEach((idx, i) => {
     const piece = document.createElement("div");
     piece.classList.add("piece");
-    const row = Math.floor(indexes[i] / size);
-    const col = indexes[i] % size;
+    const row = Math.floor(idx / size);
+    const col = idx % size;
     piece.style.backgroundImage = `url(${imageSrc})`;
-    piece.style.backgroundSize = `${size * 100}px ${size * 100}px`;
     piece.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
-    piece.dataset.index = indexes[i];
-    piece.addEventListener("click", () => onPieceClick(i));
+    piece.dataset.index = idx;
+    piece.addEventListener("click", () => handleClick(i));
     pieces.push(piece);
     puzzleBoard.appendChild(piece);
-  }
+  });
 
   timer = setInterval(updateTimer, 1000);
 }
 
-function onPieceClick(i) {
+function handleClick(i) {
   clickSound.play();
-  if (pieces.length < 2) return;
-  if (i === emptyIndex) return;
+  const empty = pieces.findIndex(p => !p.textContent && !p.hasChildNodes());
+  if (i === empty) return;
 
-  if (!pieces[i].classList.contains("empty")) {
-    swapSound.play();
-    const index1 = pieces[i].dataset.index;
-    const index2 = pieces[emptyIndex]?.dataset.index;
+  swapSound.play();
 
-    // Swap visuel
-    const temp = pieces[i].style.backgroundPosition;
-    pieces[i].style.backgroundPosition = pieces[emptyIndex]?.style.backgroundPosition;
-    pieces[emptyIndex].style.backgroundPosition = temp;
+  const a = pieces[i];
+  const b = pieces[empty];
 
-    // Swap data
-    const tempIndex = pieces[i].dataset.index;
-    pieces[i].dataset.index = pieces[emptyIndex].dataset.index;
-    pieces[emptyIndex].dataset.index = tempIndex;
+  [a.style.backgroundPosition, b.style.backgroundPosition] = [b.style.backgroundPosition, a.style.backgroundPosition];
+  [a.dataset.index, b.dataset.index] = [b.dataset.index, a.dataset.index];
 
-    moves++;
-    movesSpan.textContent = moves;
-    scoreSpan.textContent = (size * size * 2 - moves).toString();
+  moves++;
+  movesSpan.textContent = moves;
+  scoreSpan.textContent = (size * size * 2 - moves).toString();
 
-    if (checkWin()) {
-      clearInterval(timer);
-      message.classList.remove("hidden");
-      winSound.play();
-    }
+  if (checkWin()) {
+    clearInterval(timer);
+    winSound.play();
+    message.classList.remove("hidden");
   }
 }
 
 function checkWin() {
-  return Array.from(puzzleBoard.children).every((piece, index) => {
-    return parseInt(piece.dataset.index) === index;
-  });
+  return Array.from(puzzleBoard.children).every((piece, idx) =>
+    parseInt(piece.dataset.index) === idx
+  );
 }
 
 function updateTimer() {
@@ -128,5 +116,5 @@ function shuffle(array) {
 }
 
 function isSolved(array) {
-  return array.every((val, i) => val === i);
+  return array.every((v, i) => v === i);
 }
