@@ -1,90 +1,52 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: sans-serif;
   text-align: center;
-  background-color: #fefefe;
+  background: #f9f9f9;
   margin: 0;
-  padding: 0;
+  padding: 1em;
 }
 
 h1 {
-  background-color: #f3f3f3;
-  padding: 10px;
-  margin: 0;
-  font-size: 1.8em;
+  font-size: 2em;
+  margin-bottom: 0.5em;
 }
 
-#startScreen {
-  margin-top: 20px;
-}
-
-input[type="text"] {
-  padding: 10px;
+.infos {
   font-size: 1em;
-  width: 200px;
-  max-width: 80%;
+  margin-bottom: 1em;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 1em;
-  margin-left: 10px;
-  cursor: pointer;
-}
-
-.info {
-  margin: 20px 0;
-  font-size: 1.1em;
-}
-
-#puzzleContainer {
-  width: 300px;
-  height: 300px;
-  margin: auto;
+#puzzle-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 100px);
   gap: 2px;
+  justify-content: center;
+  margin: auto;
 }
 
-.tile {
-  background-image: url("files/cat.jpg");
+.piece {
+  width: 100px;
+  height: 100px;
   background-size: 300px 300px;
+  border: 1px solid #ccc;
   cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.tile:hover {
-  transform: scale(1.05);
 }
 
 #message {
   font-size: 2em;
   color: green;
-  margin-top: 20px;
-  animation: bounce 1s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-#pub {
-  margin-top: 30px;
-  width: 80%;
-  max-width: 400px;
-}
-
-.hidden {
+  margin-top: 1em;
   display: none;
+  animation: blink 1s infinite;
 }
 
-@media (max-width: 400px) {
-  #puzzleContainer {
-    width: 90vw;
-    height: 90vw;
-  }
-  .tile {
-    background-size: 90vw 90vw;
-  }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.pub img {
+  margin-top: 2em;
+  max-width: 80%;
+  height: auto;
 }
