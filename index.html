@@ -2,34 +2,41 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🧩 Puzzle : Niveau 1 🧩</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🧩 Puzzle : LEVEL 1 🧩</h1>
+  <div class="container">
+    <h1>🧩 Puzzle : Niveau 1 🧩</h1>
+    <div id="start-screen">
+      <input type="text" id="player-name" placeholder="Entrez votre nom" />
+      <button id="start-button">Commencer</button>
+    </div>
 
-  <div id="start-screen">
-    <input type="text" id="playerName" placeholder="Entrez votre nom..." />
-    <button onclick="startGame()">Commencer</button>
-  </div>
+    <div id="game-ui" class="hidden">
+      <div class="stats">
+        👤 Joueur : <span id="display-name">-</span> |
+        🧠 Score : <span id="score">0</span> |
+        🔁 Coups : <span id="moves">0</span> |
+        ⏱️ <span id="timer">00:00</span>
+      </div>
 
-  <div id="game-info" style="display:none;">
-    <div class="info-bar">
-      👤 Joueur : <span id="nameDisplay">-</span> |
-      🧠 Score : <span id="score">0</span> |
-      🔁 Coups : <span id="moves">0</span> |
-      ⏱️ <span id="timer">00:00</span>
+      <div id="puzzle-container"></div>
+
+      <div id="win-message" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
+
+      <div class="buttons">
+        <button id="replay-button" class="hidden">🔄 Rejouer</button>
+        <button id="next-button" class="hidden" disabled>➡️ Niveau 2</button>
+      </div>
+
+      <div class="pub">
+        <img src="Puzzle/Files/PUB.png" alt="Publicité" />
+      </div>
     </div>
   </div>
 
-  <div id="puzzle-container"></div>
-
-  <div id="victory-message">🎉 Bravo ! Puzzle réussi 🎉</div>
-
-  <div class="buttons">
-    <button onclick="restartGame()">🔁 Rejouer</button>
-    <button id="nextLevelBtn" onclick="goToNextLevel()" disabled>⏭️ Niveau 2</button>
-  </div>
-
-  <img
+  <script src="script.js"></script>
+</body>
+</html>
