@@ -17,4 +17,20 @@
 
     <div class="game-ui hidden">
       <div class="infos">
-        👤 Joueur : <span id="name">-</s
+        👤 Joueur : <span id="name">-</span> |
+        🧠 Score : <span id="score">0</span> |
+        🔁 Coups : <span id="moves">0</span> |
+        ⏱️ <span id="timer">00:00</span>
+      </div>
+      <div id="puzzle-container"></div>
+      <div class="message hidden" id="winMessage">🎉 Bravo ! Puzzle réussi 🎉</div>
+      <div class="buttons">
+        <button id="replayButton">🔄 Rejouer</button>
+        <button id="nextLevelButton" disabled>➡️ Niveau 2</button>
+      </div>
+      <img src="Puzzle/Files/PUB.png" alt="pub" class="pub" />
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
