@@ -1,124 +1,101 @@
-const puzzleSize = 3;
+const container = document.getElementById("puzzle-container");
+const message = document.getElementById("message");
+const scoreSpan = document.getElementById("score");
+const movesSpan = document.getElementById("moves");
+const timerSpan = document.getElementById("timer");
+
 let pieces = [];
-let emptyIndex = null;
+let firstPiece = null;
 let moves = 0;
 let score = 0;
-let timerInterval;
-let seconds = 0;
+let timer = 0;
+let interval;
 
-const clickSound = document.getElementById("clickSound");
-const swapSound = document.getElementById("swapSound");
-const winSound = document.getElementById("winSound");
+function createPuzzle() {
+  const indices = [...Array(9).keys()];
 
-function startGame() {
-  const name = document.getElementById("playerNameInput").value || "Joueur";
-  document.getElementById("playerName").textContent = name;
-  document.getElementById("startScreen").classList.add("hidden");
-  document.getElementById("gameInfo").classList.remove("hidden");
-  document.getElementById("puzzleContainer").classList.remove("hidden");
-  document.getElementById("message").classList.add("hidden");
-
-  score = 0;
-  moves = 0;
-  seconds = 0;
-  document.getElementById("score").textContent = score;
-  document.getElementById("moves").textContent = moves;
-  document.getElementById("timer").textContent = "00:00";
-
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(updateTimer, 1000);
-
-  initPuzzle();
-}
-
-function updateTimer() {
-  seconds++;
-  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const sec = String(seconds % 60).padStart(2, "0");
-  document.getElementById("timer").textContent = `${min}:${sec}`;
-}
-
-function initPuzzle() {
-  const container = document.getElementById("puzzleContainer");
-  container.innerHTML = "";
-  pieces = [];
-
-  for (let i = 0; i < puzzleSize * puzzleSize; i++) {
-    pieces.push(i);
-  }
-
+  // Mélange en s'assurant qu'aucune pièce ne soit à sa position correcte
+  let shuffled;
   do {
-    shuffleArray(pieces);
-  } while (pieces.every((val, idx) => val === idx)); // S'assurer que ce n’est pas déjà bon
+    shuffled = indices.slice().sort(() => Math.random() - 0.5);
+  } while (shuffled.some((val, i) => val === i));
 
-  pieces.forEach((val, idx) => {
-    const tile = document.createElement("div");
-    tile.className = "tile";
-    const x = val % puzzleSize;
-    const y = Math.floor(val / puzzleSize);
-    tile.style.backgroundPosition = `-${x * 100}px -${y * 100}px`;
-    tile.dataset.index = idx;
-    tile.dataset.value = val;
-    tile.addEventListener("click", handleClick);
-    container.appendChild(tile);
+  container.innerHTML = "";
+
+  shuffled.forEach((index) => {
+    const piece = document.createElement("div");
+    piece.className = "piece";
+    piece.dataset.index = index;
+    piece.style.backgroundImage = "url('files/cat.jpg')";
+    const row = Math.floor(index / 3);
+    const col = index % 3;
+    piece.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
+    container.appendChild(piece);
   });
+
+  pieces = Array.from(document.getElementsByClassName("piece"));
+  pieces.forEach(p => p.addEventListener("click", () => handleClick(p)));
+
+  // Reset
+  moves = 0;
+  score = 0;
+  timer = 0;
+  updateDisplay();
+  clearInterval(interval);
+  interval = setInterval(updateTimer, 1000);
+  message.style.display = "none";
 }
 
-let firstTile = null;
-
-function handleClick(e) {
-  clickSound.play();
-  const tile = e.currentTarget;
-  if (!firstTile) {
-    firstTile = tile;
-    tile.style.outline = "2px solid red";
-  } else if (tile !== firstTile) {
-    swapSound.play();
-    const idx1 = +firstTile.dataset.index;
-    const idx2 = +tile.dataset.index;
-    const val1 = firstTile.dataset.value;
-    const val2 = tile.dataset.value;
-
-    // Échanger les positions
-    [pieces[idx1], pieces[idx2]] = [pieces[idx2], pieces[idx1]];
-    firstTile.dataset.value = val2;
-    tile.dataset.value = val1;
-
-    updateTiles();
+function handleClick(piece) {
+  if (!firstPiece) {
+    firstPiece = piece;
+    piece.style.outline = "2px solid blue";
+  } else if (piece !== firstPiece) {
+    piece.style.outline = "2px solid red";
+    swap(firstPiece, piece);
+    firstPiece.style.outline = "";
+    piece.style.outline = "";
+    firstPiece = null;
     moves++;
-    document.getElementById("moves").textContent = moves;
     checkWin();
-
-    firstTile.style.outline = "none";
-    firstTile = null;
+    updateDisplay();
   }
 }
 
-function updateTiles() {
-  const tiles = document.querySelectorAll(".tile");
-  tiles.forEach((tile, idx) => {
-    const val = pieces[idx];
-    const x = val % puzzleSize;
-    const y = Math.floor(val / puzzleSize);
-    tile.style.backgroundPosition = `-${x * 100}px -${y * 100}px`;
-    tile.dataset.value = val;
-  });
+function swap(p1, p2) {
+  const tempIndex = p1.dataset.index;
+  p1.dataset.index = p2.dataset.index;
+  p2.dataset.index = tempIndex;
+
+  const tempStyle = p1.style.backgroundPosition;
+  p1.style.backgroundPosition = p2.style.backgroundPosition;
+  p2.style.backgroundPosition = tempStyle;
 }
 
 function checkWin() {
-  const won = pieces.every((val, idx) => val === idx);
-  if (won) {
-    clearInterval(timerInterval);
-    score = 1000 - moves * 10 + Math.max(0, 600 - seconds);
-    document.getElementById("score").textContent = score;
-    document.getElementById("message").classList.remove("hidden");
-    winSound.play();
+  let correct = 0;
+  pieces.forEach((piece, i) => {
+    if (parseInt(piece.dataset.index) === i) correct++;
+  });
+
+  score = correct;
+
+  if (correct === 9) {
+    clearInterval(interval);
+    message.style.display = "block";
   }
 }
 
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
+function updateTimer() {
+  timer++;
+  const min = String(Math.floor(timer / 60)).padStart(2, "0");
+  const sec = String(timer % 60).padStart(2, "0");
+  timerSpan.textContent = `${min}:${sec}`;
 }
+
+function updateDisplay() {
+  scoreSpan.textContent = score;
+  movesSpan.textContent = moves;
+}
+
+window.onload = createPuzzle;
