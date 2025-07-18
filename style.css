@@ -1,52 +1,115 @@
 body {
-  font-family: sans-serif;
-  text-align: center;
-  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
   margin: 0;
-  padding: 1em;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 600px;
+  width: 95%;
+  padding: 20px;
+  text-align: center;
+  background-color: #fff;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  font-size: 2em;
-  margin-bottom: 0.5em;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
-.infos {
-  font-size: 1em;
-  margin-bottom: 1em;
+#start-screen input {
+  padding: 10px;
+  font-size: 16px;
+  width: 60%;
+  max-width: 300px;
+  margin-bottom: 10px;
 }
 
-#puzzle-container {
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
-  gap: 2px;
-  justify-content: center;
-  margin: auto;
-}
-
-.piece {
-  width: 100px;
-  height: 100px;
-  background-size: 300px 300px;
-  border: 1px solid #ccc;
+#start-screen button {
+  padding: 10px 20px;
+  font-size: 16px;
   cursor: pointer;
 }
 
-#message {
-  font-size: 2em;
-  color: green;
-  margin-top: 1em;
+.info-bar {
+  font-size: 16px;
+  margin: 15px 0;
+}
+
+#puzzle-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin: 10px 0;
+}
+
+.piece {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-size: 300% 300%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: transform 0.2s;
+}
+
+.piece:hover {
+  transform: scale(1.05);
+}
+
+.hidden {
   display: none;
-  animation: blink 1s infinite;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+#message {
+  font-size: 24px;
+  color: green;
+  margin: 20px 0;
+  animation: pop 1s ease-in-out infinite alternate;
 }
 
-.pub img {
-  margin-top: 2em;
-  max-width: 80%;
-  height: auto;
+@keyframes pop {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+.buttons {
+  margin-top: 10px;
+}
+
+.buttons button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#pub-image {
+  margin-top: 15px;
+  width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .info-bar {
+    font-size: 14px;
+  }
+
+  .buttons button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  #start-screen input {
+    width: 80%;
+  }
 }
