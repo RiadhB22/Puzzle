@@ -1,88 +1,119 @@
 body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background: #f7f7f7;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  text-align: center;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
 }
 
 h1 {
-  margin-top: 10px;
-  font-size: 1.5em;
-}
-
-#start-screen {
-  margin-top: 20px;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
 }
 
 #start-screen input {
-  padding: 8px;
-  font-size: 1em;
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 70%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
+#start-screen button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.stats {
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 #puzzle-container {
-  margin: 10px auto;
-  width: 90vw;
-  max-width: 400px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
+  max-width: 100%;
+  margin: auto;
+  aspect-ratio: 1 / 1;
 }
 
-.puzzle-piece {
-  width: 100%;
-  aspect-ratio: 1/1;
-  background-size: 300% 300%;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 4px #aaa;
-  transition: transform 0.2s;
-}
-
-.puzzle-piece:hover {
-  transform: scale(1.05);
+.piece {
+  background-size: 300%;
+  background-repeat: no-repeat;
   cursor: pointer;
+  transition: transform 0.2s;
+  border: 1px solid #ccc;
 }
 
-#victory-message {
-  display: none;
-  font-size: 1.5em;
+.piece:hover {
+  transform: scale(1.03);
+}
+
+#win-message {
+  font-size: 1.5rem;
   color: green;
-  margin: 10px;
-  animation: blink 1s infinite;
+  margin-top: 1rem;
+  animation: blink 1s infinite alternate;
 }
 
 @keyframes blink {
-  0%, 100% {opacity: 1;}
-  50% {opacity: 0.4;}
-}
-
-#pub-image {
-  margin: 20px auto;
-  width: 90%;
-  max-width: 400px;
-  display: block;
+  from { opacity: 1; }
+  to { opacity: 0.5; }
 }
 
 .buttons {
-  margin: 10px;
+  margin-top: 1rem;
 }
 
-button {
-  padding: 10px 15px;
-  font-size: 1em;
-  margin: 5px;
+.buttons button {
+  padding: 0.5rem 1rem;
+  margin: 0.2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #008cba;
+  color: white;
+  cursor: pointer;
 }
 
+.buttons button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.pub img {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Responsive */
 @media screen and (max-width: 600px) {
   #puzzle-container {
-    max-width: 95vw;
-  }
-
-  .puzzle-piece {
-    border: 1px solid #999;
+    width: 100%;
   }
 
   h1 {
-    font-size: 1.2em;
+    font-size: 1.5rem;
+  }
+
+  .stats {
+    font-size: 0.9rem;
+  }
+
+  .buttons button {
+    font-size: 0.9rem;
   }
 }
