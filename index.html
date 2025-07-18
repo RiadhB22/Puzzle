@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Puzzle : Niveau 1</title>
+  <title>🧩 Puzzle : Niveau 1 🧩</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,26 +12,31 @@
 
     <div id="start-screen">
       <input type="text" id="player-name" placeholder="Entrez votre nom" />
-      <button id="start-btn">Commencer</button>
+      <button onclick="startGame()">Commencer</button>
     </div>
 
-    <div id="game-ui" style="display:none;">
+    <div id="game-ui" class="hidden">
       <div class="info-bar">
-        👤 Joueur : <span id="player-display">-</span> |
+        👤 Joueur : <span id="name-display">-</span> |
         🧠 Score : <span id="score">0</span> |
         🔁 Coups : <span id="moves">0</span> |
         ⏱️ <span id="timer">00:00</span>
       </div>
 
-      <div id="puzzle"></div>
+      <div id="puzzle-board" class="puzzle-board"></div>
+
+      <div id="message" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
 
       <div class="buttons">
-        <button id="replay-btn">Rejouer</button>
-        <button id="next-level-btn">Niveau 2</button>
+        <button onclick="restartGame()">🔁 Rejouer</button>
+        <button id="nextBtn" onclick="goToLevel2()" disabled>➡️ Niveau 2</button>
       </div>
 
-      <div id="win-message" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
-      <img src="files/PUB.png" id="pub" alt="Publicité" />
+      <div class="pub-zone">
+        <img src="Puzzle/Files/PUB.png" alt="pub">
+      </div>
+
+      <footer>DESIGNED BY RIADH BEJJAR</footer>
     </div>
   </div>
 
