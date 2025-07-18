@@ -1,121 +1,168 @@
-const puzzleContainer = document.getElementById("puzzle-container");
-const victoryMessage = document.getElementById("victory-message");
-const nameDisplay = document.getElementById("nameDisplay");
-const scoreSpan = document.getElementById("score");
-const movesSpan = document.getElementById("moves");
-const timerSpan = document.getElementById("timer");
-const nextLevelBtn = document.getElementById("nextLevelBtn");
-
+let playerName = "";
+let startTime, timerInterval;
+let score = 0;
+let moves = 0;
+let gridSize = 3;
 let pieces = [];
-let moveCount = 0;
-let timer = null;
-let seconds = 0;
-let selected = [];
+let emptyIndex = -1;
+let isStarted = false;
+let isWon = false;
 
-const clickSound = new Audio("Files/click.mp3");
-const swapSound = new Audio("Files/swap.mp3");
-const winSound = new Audio("Files/win.mp3");
+// Sons
+const clickSound = new Audio("Puzzle/Files/click.mp3");
+const swapSound = new Audio("Puzzle/Files/swap.mp3");
+const winSound = new Audio("Puzzle/Files/win.mp3");
+
+function $(id) {
+  return document.getElementById(id);
+}
 
 function startGame() {
-  const playerName = document.getElementById("playerName").value.trim();
-  if (!playerName) return alert("Entrez votre nom");
-  document.getElementById("start-screen").style.display = "none";
-  document.getElementById("game-info").style.display = "block";
-  nameDisplay.textContent = playerName;
-  victoryMessage.style.display = "none";
-  moveCount = 0;
-  movesSpan.textContent = "0";
-  scoreSpan.textContent = "0";
-  selected = [];
-  seconds = 0;
-  clearInterval(timer);
-  timer = setInterval(updateTimer, 1000);
-  generatePuzzle();
+  const nameInput = $("name-input").value.trim();
+  if (!nameInput) return;
+  playerName = nameInput;
+  $("player-name").textContent = playerName;
+  $("start-screen").classList.add("hidden");
+  $("game-screen").classList.remove("hidden");
+
+  isStarted = true;
+  isWon = false;
+  moves = 0;
+  score = 0;
+  $("moves").textContent = moves;
+  $("score").textContent = score;
+  $("win-message").classList.add("hidden");
+  $("next-btn").disabled = true;
+
+  startTimer();
+  initPuzzle();
 }
 
-function updateTimer() {
-  seconds++;
-  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const sec = String(seconds % 60).padStart(2, "0");
-  timerSpan.textContent = `${min}:${sec}`;
+function startTimer() {
+  startTime = Date.now();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
+    const seconds = String(elapsed % 60).padStart(2, "0");
+    $("timer").textContent = `${minutes}:${seconds}`;
+  }, 1000);
 }
 
-function generatePuzzle() {
-  puzzleContainer.innerHTML = "";
-  pieces = [];
-
-  for (let i = 0; i < 9; i++) {
-    pieces.push(i);
+function initPuzzle() {
+  const container = $("puzzle-container");
+  container.innerHTML = "";
+  const indices = shuffle(Array.from({ length: gridSize * gridSize }, (_, i) => i));
+  while (!isValidShuffle(indices)) {
+    indices = shuffle(indices);
   }
+  pieces = indices;
 
-  do {
-    shuffleArray(pieces);
-  } while (pieces.some((val, idx) => val === idx)); // éviter toute pièce à la bonne place
+  const bgSize = `${gridSize * 100}%`;
+  indices.forEach((index, i) => {
+    const row = Math.floor(index / gridSize);
+    const col = index % gridSize;
 
-  for (let i = 0; i < 9; i++) {
-    const div = document.createElement("div");
-    div.classList.add("puzzle-piece");
-    div.style.backgroundImage = "url('Files/cat.jpg')";
-    div.style.backgroundPosition = `${(pieces[i] % 3) * -100}% ${(Math.floor(pieces[i] / 3)) * -100}%`;
-    div.dataset.index = i;
-    div.addEventListener("click", () => selectPiece(div));
-    puzzleContainer.appendChild(div);
-  }
+    const piece = document.createElement("div");
+    piece.className = "piece";
+    piece.style.backgroundImage = 'url("Puzzle/Files/cat.jpg")';
+    piece.style.backgroundSize = bgSize;
+    piece.style.backgroundPosition = `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`;
+    piece.dataset.index = i;
+    piece.addEventListener("click", onPieceClick);
+    container.appendChild(piece);
+  });
 }
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
+function shuffle(array) {
+  let a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [a[i], a[j]] = [a[j], a[i]];
   }
+  return a;
 }
 
-function selectPiece(piece) {
+function isValidShuffle(arr) {
+  return arr.some((val, idx) => val !== idx);
+}
+
+let selectedIndex = null;
+
+function onPieceClick(e) {
+  if (!isStarted || isWon) return;
   clickSound.play();
-  if (selected.length < 2 && !selected.includes(piece)) {
-    selected.push(piece);
-    piece.style.outline = "2px solid red";
-    if (selected.length === 2) {
-      setTimeout(() => {
-        swapSound.play();
-        swapPieces(selected[0], selected[1]);
-        selected[0].style.outline = "none";
-        selected[1].style.outline = "none";
-        selected = [];
-        moveCount++;
-        movesSpan.textContent = moveCount;
-        checkWin();
-      }, 300);
+
+  const index = parseInt(e.target.dataset.index);
+  if (selectedIndex === null) {
+    selectedIndex = index;
+    highlightPiece(index);
+  } else if (selectedIndex !== index) {
+    swapSound.play();
+    swapPieces(selectedIndex, index);
+    moves++;
+    $("moves").textContent = moves;
+    selectedIndex = null;
+    updatePuzzle();
+
+    if (checkWin()) {
+      isWon = true;
+      winSound.play();
+      $("win-message").classList.remove("hidden");
+      clearInterval(timerInterval);
+      $("score").textContent = 100 - moves;
+      $("next-btn").disabled = false;
     }
+  } else {
+    selectedIndex = null;
+    clearHighlights();
   }
 }
 
-function swapPieces(p1, p2) {
-  const idx1 = p1.dataset.index;
-  const idx2 = p2.dataset.index;
-  const bg1 = p1.style.backgroundPosition;
-  const bg2 = p2.style.backgroundPosition;
-  p1.style.backgroundPosition = bg2;
-  p2.style.backgroundPosition = bg1;
-  [pieces[idx1], pieces[idx2]] = [pieces[idx2], pieces[idx1]];
+function highlightPiece(index) {
+  clearHighlights();
+  const piece = document.querySelector(`.piece[data-index='${index}']`);
+  if (piece) piece.style.border = "2px solid red";
+}
+
+function clearHighlights() {
+  document.querySelectorAll(".piece").forEach(p => {
+    p.style.border = "1px solid #ccc";
+  });
+}
+
+function swapPieces(i, j) {
+  [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+}
+
+function updatePuzzle() {
+  const container = $("puzzle-container");
+  container.childNodes.forEach((piece, i) => {
+    const index = pieces[i];
+    const row = Math.floor(index / gridSize);
+    const col = index % gridSize;
+    piece.style.backgroundPosition = `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`;
+  });
 }
 
 function checkWin() {
-  const win = pieces.every((val, idx) => val === idx);
-  if (win) {
-    clearInterval(timer);
-    victoryMessage.style.display = "block";
-    winSound.play();
-    scoreSpan.textContent = 100 - moveCount;
-    nextLevelBtn.disabled = false;
-  }
+  return pieces.every((val, idx) => val === idx);
 }
 
-function restartGame() {
-  nextLevelBtn.disabled = true;
-  startGame();
+function resetGame() {
+  $("name-input").value = "";
+  $("start-screen").classList.remove("hidden");
+  $("game-screen").classList.add("hidden");
+  clearInterval(timerInterval);
+  $("timer").textContent = "00:00";
 }
 
-function goToNextLevel() {
-  alert("Niveau 2 non encore prêt !");
+function goToLevel2() {
+  alert("🚧 Niveau 2 en développement !");
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  $("start-btn").addEventListener("click", startGame);
+  $("replay-btn").addEventListener("click", startGame);
+  $("next-btn").addEventListener("click", goToLevel2);
+});
