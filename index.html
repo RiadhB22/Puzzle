@@ -1,41 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🧩 Puzzle : Niveau 1 🧩</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Puzzle Jeu - TAKWEEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🧩 Puzzle : LEVEL 1 🧩</h1>
 
-    <div id="startScreen">
-      <input type="text" id="playerName" placeholder="Entrez votre nom..." />
-      <button onclick="startGame()">Commencer</button>
+<div id="welcome">
+    <h1>Puzzle Jeu : TAKWEEN</h1>
+    <input type="text" id="nameInput" placeholder="Entrez votre nom">
+    <button onclick="startGame()">Commencer</button>
+</div>
+
+<div id="game" style="display:none;">
+    <div class="top-bar">
+        <div>👤 <span id="playerName">Nom</span></div>
+        <div>⭐ Score : <span id="score">0</span></div>
+        <div>🎯 Coups : <span id="moves">0</span></div>
+        <div>🕒 <span id="timer">00:00</span></div>
     </div>
 
-    <div id="gameUI" class="hidden">
-      <div class="infos">
-        👤 Joueur : <span id="nameDisplay">-</span> |
-        🧠 Score : <span id="score">0</span> |
-        🔁 Coups : <span id="moves">0</span> |
-        ⏱️ <span id="timer">00:00</span>
-      </div>
+    <div id="puzzle" class="puzzle"></div>
 
-      <div id="puzzle"></div>
+    <div id="message">🎉 Bravo !</div>
 
-      <div id="victoryMessage" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
-
-      <div class="buttons">
+    <div class="buttons">
         <button onclick="restartGame()">🔁 Rejouer</button>
-        <button id="nextLevel" onclick="goToNextLevel()" disabled>➡️ Niveau 2</button>
-      </div>
-
-      <img src="Puzzle/Files/PUB.png" alt="Publicité" class="pub" />
+        <button id="nextLevel" disabled>Niveau 2</button>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <img src="Files/PUB.png" class="pub">
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
