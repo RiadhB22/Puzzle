@@ -1,97 +1,149 @@
-// script.js
 const board = document.getElementById("puzzle-board");
-const startButton = document.getElementById("start-button");
-const playerNameInput = document.getElementById("player-name");
-const message = document.querySelector(".message");
+const message = document.getElementById("message");
+const scoreSpan = document.getElementById("score");
+const movesSpan = document.getElementById("moves");
+const timerSpan = document.getElementById("timer");
+const playerNameSpan = document.getElementById("player-name");
+const startScreen = document.getElementById("start-screen");
+const gameScreen = document.getElementById("game-screen");
+const nameInput = document.getElementById("player-name-input");
+
 let pieces = [];
-let firstSelected = null;
+let firstPiece = null;
+let score = 0;
 let moves = 0;
+let timer = 0;
+let timerInterval = null;
+const image = "files/cat.jpg";
+const size = 3;
 
-const gridSize = 3;
+const clickSound = new Audio("files/click.mp3");
+const swapSound = new Audio("files/swap.mp3");
+const winSound = new Audio("files/win.mp3");
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+function startGame() {
+  const name = nameInput.value.trim();
+  if (!name) {
+    alert("Entrez votre nom !");
+    return;
   }
+  playerNameSpan.textContent = name;
+  startScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
+  resetGame();
 }
 
-function createPieces(imageUrl) {
+function resetGame() {
   board.innerHTML = "";
   pieces = [];
-
-  const order = Array.from({ length: gridSize * gridSize }, (_, i) => i);
-  shuffle(order);
-
-  for (let i = 0; i < gridSize * gridSize; i++) {
-    const piece = document.createElement("div");
-    piece.className = "piece";
-
-    const row = Math.floor(i / gridSize);
-    const col = i % gridSize;
-    const bgX = (col / (gridSize - 1)) * 100;
-    const bgY = (row / (gridSize - 1)) * 100;
-
-    piece.style.backgroundImage = `url('${imageUrl}')`;
-    piece.style.backgroundPosition = `${bgX}% ${bgY}%`;
-
-    piece.dataset.correctIndex = i;
-    piece.dataset.currentIndex = order[i];
-
-    pieces.push(piece);
-    board.appendChild(piece);
-  }
-
-  updatePositions();
+  firstPiece = null;
+  score = 0;
+  moves = 0;
+  timer = 0;
+  updateInfo();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(updateTimer, 1000);
+  createPieces();
 }
 
-function updatePositions() {
-  pieces.forEach((piece, i) => {
-    const index = parseInt(piece.dataset.currentIndex);
-    const row = Math.floor(index / gridSize);
-    const col = index % gridSize;
+function updateInfo() {
+  scoreSpan.textContent = score;
+  movesSpan.textContent = moves;
+  timerSpan.textContent = formatTime(timer);
+}
 
-    piece.style.gridRowStart = row + 1;
-    piece.style.gridColumnStart = col + 1;
+function updateTimer() {
+  timer++;
+  timerSpan.textContent = formatTime(timer);
+}
 
-    piece.onclick = () => handlePieceClick(piece);
+function formatTime(sec) {
+  const m = Math.floor(sec / 60).toString().padStart(2, "0");
+  const s = (sec % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function createPieces() {
+  const total = size * size;
+  const positions = [...Array(total).keys()];
+  let shuffled = [];
+
+  // Shuffle until no piece is in correct position
+  do {
+    shuffled = positions.slice().sort(() => Math.random() - 0.5);
+  } while (shuffled.some((val, idx) => val === idx));
+
+  shuffled.forEach((index, i) => {
+    const row = Math.floor(index / size);
+    const col = index % size;
+
+    const div = document.createElement("div");
+    div.classList.add("piece");
+    div.dataset.correct = index;
+    div.dataset.current = i;
+
+    const x = (col * 100) / (size - 1);
+    const y = (row * 100) / (size - 1);
+    div.style.backgroundImage = `url('${image}')`;
+    div.style.backgroundPosition = `${x}% ${y}%`;
+
+    div.addEventListener("click", () => handleClick(div));
+
+    pieces.push(div);
+    board.appendChild(div);
   });
 }
 
-function handlePieceClick(piece) {
-  if (!firstSelected) {
-    firstSelected = piece;
-    piece.style.outline = "2px solid red";
-  } else if (piece !== firstSelected) {
-    const tmp = piece.dataset.currentIndex;
-    piece.dataset.currentIndex = firstSelected.dataset.currentIndex;
-    firstSelected.dataset.currentIndex = tmp;
+function handleClick(piece) {
+  clickSound.play();
 
-    firstSelected.style.outline = "none";
-    firstSelected = null;
-
-    updatePositions();
-    moves++;
-
-    if (checkWin()) {
-      message.innerHTML = `✨ Bravo ! Vous avez terminé le puzzle en ${moves} coups.`;
-      document.getElementById("next-button").disabled = false;
-    }
+  if (!firstPiece) {
+    firstPiece = piece;
+    piece.classList.add("selected");
+    return;
   }
+
+  if (firstPiece === piece) return;
+
+  swapSound.play();
+  const idx1 = pieces.indexOf(firstPiece);
+  const idx2 = pieces.indexOf(piece);
+
+  board.insertBefore(piece, pieces[idx1]);
+  board.insertBefore(firstPiece, pieces[idx2]);
+
+  [pieces[idx1], pieces[idx2]] = [pieces[idx2], pieces[idx1]];
+
+  [firstPiece.dataset.current, piece.dataset.current] = [piece.dataset.current, firstPiece.dataset.current];
+
+  firstPiece.classList.remove("selected");
+  firstPiece = null;
+  moves++;
+  updateInfo();
+  checkWin();
 }
 
 function checkWin() {
-  return pieces.every(p => p.dataset.correctIndex === p.dataset.currentIndex);
+  let correct = 0;
+  pieces.forEach((p, i) => {
+    if (parseInt(p.dataset.correct) === i) correct++;
+  });
+
+  score = correct;
+  updateInfo();
+
+  if (correct === size * size) {
+    clearInterval(timerInterval);
+    winSound.play();
+    message.classList.remove("hidden");
+  }
 }
 
-startButton.onclick = () => {
-  const name = playerNameInput.value.trim();
-  if (name === "") {
-    alert("Veuillez saisir votre nom");
-    return;
-  }
-  document.querySelector(".top-bar").innerHTML = `✦ ${name} | Score: 0 <button id='restart-button'>Rejouer</button> Niveau 1 <button id='next-button' disabled>Niveau 2</button>`;
+function goToNextLevel() {
+  alert("Prochain niveau (non encore développé)");
+}
 
-  createPieces("Files/cat.jpg");
-  message.innerHTML = "";
-};
+// Boutons
+document.getElementById("start-button").addEventListener("click", startGame);
+document.getElementById("restart-button").addEventListener("click", resetGame);
+document.getElementById("next-level-button").addEventListener("click", goToNextLevel);

@@ -1,112 +1,115 @@
-/* style.css */
 body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f2f2f2;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: start;
   min-height: 100vh;
 }
 
-header {
+.container {
+  max-width: 600px;
+  width: 95%;
+  padding: 20px;
   text-align: center;
-  padding: 10px;
-  background-color: #4a90e2;
-  color: white;
+  background-color: #fff;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  margin: 0;
-  font-size: 2rem;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
-.top-bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+#start-screen input {
   padding: 10px;
-  background-color: #e0e0e0;
+  font-size: 16px;
+  width: 60%;
+  max-width: 300px;
+  margin-bottom: 10px;
 }
 
-#player-name {
-  padding: 6px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-button {
-  padding: 6px 12px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 5px;
-  background-color: #4a90e2;
-  color: white;
+#start-screen button {
+  padding: 10px 20px;
+  font-size: 16px;
   cursor: pointer;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.info-bar {
+  font-size: 16px;
+  margin: 15px 0;
 }
 
 #puzzle-board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 2px;
-  width: 90vmin;
-  height: 90vmin;
-  margin: 20px auto;
-  border: 3px solid #4a90e2;
-  background-color: white;
+  gap: 3px;
+  margin: 10px 0;
 }
 
 .piece {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
   background-size: 300% 300%;
   background-repeat: no-repeat;
-  border: 1px solid #999;
-  transition: transform 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: transform 0.2s;
 }
 
 .piece:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-.message {
-  text-align: center;
-  font-size: 1.2rem;
+.hidden {
+  display: none;
+}
+
+#message {
+  font-size: 24px;
   color: green;
-  margin: 10px 0;
+  margin: 20px 0;
+  animation: pop 1s ease-in-out infinite alternate;
 }
 
-footer {
-  text-align: center;
-  background-color: #ddd;
-  padding: 10px;
-  margin-top: auto;
+@keyframes pop {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
 }
 
-.pub-image {
-  width: 80%;
-  max-width: 250px;
-  height: auto;
-  display: block;
-  margin: 10px auto;
+.buttons {
+  margin-top: 10px;
 }
 
-@media (max-width: 600px) {
-  .top-bar {
-    flex-direction: column;
+.buttons button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#pub-image {
+  margin-top: 15px;
+  width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .info-bar {
+    font-size: 14px;
   }
-  #puzzle-board {
-    width: 95vmin;
-    height: 95vmin;
+
+  .buttons button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  #start-screen input {
+    width: 80%;
   }
 }
