@@ -1,119 +1,121 @@
-const startBtn = document.getElementById("startButton");
-const nameSpan = document.getElementById("name");
-const gameUI = document.querySelector(".game-ui");
-const startScreen = document.querySelector(".start-screen");
 const puzzleContainer = document.getElementById("puzzle-container");
-const timerSpan = document.getElementById("timer");
+const victoryMessage = document.getElementById("victory-message");
+const nameDisplay = document.getElementById("nameDisplay");
 const scoreSpan = document.getElementById("score");
 const movesSpan = document.getElementById("moves");
-const winMessage = document.getElementById("winMessage");
-const nextLevelButton = document.getElementById("nextLevelButton");
-const replayButton = document.getElementById("replayButton");
+const timerSpan = document.getElementById("timer");
+const nextLevelBtn = document.getElementById("nextLevelBtn");
 
 let pieces = [];
-let emptyIndex = 0;
-let timer, seconds = 0, moves = 0, score = 0;
-const size = 3;
+let moveCount = 0;
+let timer = null;
+let seconds = 0;
+let selected = [];
 
-const clickSound = new Audio("Puzzle/Files/click.mp3");
-const swapSound = new Audio("Puzzle/Files/swap.mp3");
-const winSound = new Audio("Puzzle/Files/win.mp3");
-
-startBtn.onclick = () => {
-  const name = document.getElementById("playerName").value.trim();
-  if (!name) return;
-  nameSpan.textContent = name;
-  startScreen.classList.add("hidden");
-  gameUI.classList.remove("hidden");
-  startGame();
-};
+const clickSound = new Audio("Files/click.mp3");
+const swapSound = new Audio("Files/swap.mp3");
+const winSound = new Audio("Files/win.mp3");
 
 function startGame() {
-  puzzleContainer.innerHTML = "";
-  pieces = [];
-  moves = 0;
-  score = 0;
+  const playerName = document.getElementById("playerName").value.trim();
+  if (!playerName) return alert("Entrez votre nom");
+  document.getElementById("start-screen").style.display = "none";
+  document.getElementById("game-info").style.display = "block";
+  nameDisplay.textContent = playerName;
+  victoryMessage.style.display = "none";
+  moveCount = 0;
+  movesSpan.textContent = "0";
+  scoreSpan.textContent = "0";
+  selected = [];
   seconds = 0;
   clearInterval(timer);
   timer = setInterval(updateTimer, 1000);
-  updateStats();
+  generatePuzzle();
+}
 
-  for (let i = 0; i < size * size; i++) {
+function updateTimer() {
+  seconds++;
+  const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const sec = String(seconds % 60).padStart(2, "0");
+  timerSpan.textContent = `${min}:${sec}`;
+}
+
+function generatePuzzle() {
+  puzzleContainer.innerHTML = "";
+  pieces = [];
+
+  for (let i = 0; i < 9; i++) {
     pieces.push(i);
   }
 
   do {
     shuffleArray(pieces);
-  } while (pieces.some((v, i) => v === i));
+  } while (pieces.some((val, idx) => val === idx)); // éviter toute pièce à la bonne place
 
-  puzzleContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-
-  for (let i = 0; i < pieces.length; i++) {
-    const piece = document.createElement("img");
-    piece.className = "piece";
-    piece.dataset.index = i;
-    piece.src = `Puzzle/Files/cat.jpg`;
-    piece.style.objectPosition = `${-(pieces[i] % size) * 100 / (size - 1)}% ${-Math.floor(pieces[i] / size) * 100 / (size - 1)}%`;
-    piece.addEventListener("click", () => handleClick(i));
-    puzzleContainer.appendChild(piece);
-  }
-
-  winMessage.classList.add("hidden");
-  nextLevelButton.disabled = true;
-}
-
-function handleClick(index) {
-  clickSound.play();
-
-  if (index === emptyIndex) return;
-
-  const i1 = pieces[index];
-  const i2 = pieces[emptyIndex];
-
-  [pieces[index], pieces[emptyIndex]] = [pieces[emptyIndex], pieces[index]];
-  swapSound.play();
-  moves++;
-  updateStats();
-  renderPieces();
-
-  if (isWin()) {
-    clearInterval(timer);
-    winMessage.classList.remove("hidden");
-    winSound.play();
-    nextLevelButton.disabled = false;
+  for (let i = 0; i < 9; i++) {
+    const div = document.createElement("div");
+    div.classList.add("puzzle-piece");
+    div.style.backgroundImage = "url('Files/cat.jpg')";
+    div.style.backgroundPosition = `${(pieces[i] % 3) * -100}% ${(Math.floor(pieces[i] / 3)) * -100}%`;
+    div.dataset.index = i;
+    div.addEventListener("click", () => selectPiece(div));
+    puzzleContainer.appendChild(div);
   }
 }
 
-function renderPieces() {
-  const imgs = puzzleContainer.querySelectorAll("img");
-  imgs.forEach((img, i) => {
-    const val = pieces[i];
-    img.style.objectPosition = `${-(val % size) * 100 / (size - 1)}% ${-Math.floor(val / size) * 100 / (size - 1)}%`;
-  });
-}
-
-function updateStats() {
-  movesSpan.textContent = moves;
-  scoreSpan.textContent = (100 - moves);
-}
-
-function updateTimer() {
-  seconds++;
-  let min = String(Math.floor(seconds / 60)).padStart(2, "0");
-  let sec = String(seconds % 60).padStart(2, "0");
-  timerSpan.textContent = `${min}:${sec}`;
-}
-
-function isWin() {
-  return pieces.every((val, i) => val === i);
-}
-
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
-replayButton.onclick = () => startGame();
-nextLevelButton.onclick = () => alert("Niveau 2 à venir !");
+function selectPiece(piece) {
+  clickSound.play();
+  if (selected.length < 2 && !selected.includes(piece)) {
+    selected.push(piece);
+    piece.style.outline = "2px solid red";
+    if (selected.length === 2) {
+      setTimeout(() => {
+        swapSound.play();
+        swapPieces(selected[0], selected[1]);
+        selected[0].style.outline = "none";
+        selected[1].style.outline = "none";
+        selected = [];
+        moveCount++;
+        movesSpan.textContent = moveCount;
+        checkWin();
+      }, 300);
+    }
+  }
+}
+
+function swapPieces(p1, p2) {
+  const idx1 = p1.dataset.index;
+  const idx2 = p2.dataset.index;
+  const bg1 = p1.style.backgroundPosition;
+  const bg2 = p2.style.backgroundPosition;
+  p1.style.backgroundPosition = bg2;
+  p2.style.backgroundPosition = bg1;
+  [pieces[idx1], pieces[idx2]] = [pieces[idx2], pieces[idx1]];
+}
+
+function checkWin() {
+  const win = pieces.every((val, idx) => val === idx);
+  if (win) {
+    clearInterval(timer);
+    victoryMessage.style.display = "block";
+    winSound.play();
+    scoreSpan.textContent = 100 - moveCount;
+    nextLevelBtn.disabled = false;
+  }
+}
+
+function restartGame() {
+  nextLevelBtn.disabled = true;
+  startGame();
+}
+
+function goToNextLevel() {
+  alert("Niveau 2 non encore prêt !");
+}
