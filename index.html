@@ -2,141 +2,141 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Puzzle Niveau 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Puzzle 🧩</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
-      text-align: center;
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
     h1 {
+      text-align: center;
+      margin: 20px 10px;
       font-size: 2em;
-      margin: 20px 0 10px;
-      color: #333;
+    }
+    h1 .red { color: red; }
+    h1 .blue { color: blue; }
+
+    #start-screen, #game-screen {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    #playerInput {
-      margin: 10px;
-    }
-
-    #playerInput input {
+    #start-screen input {
       padding: 10px;
-      border: 2px solid #aaa;
-      border-radius: 10px;
       font-size: 1em;
-      width: 200px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 80%;
     }
 
-    #playerInput button {
+    #start-screen button {
       padding: 10px 20px;
       font-size: 1em;
-      border: none;
-      background: #007BFF;
+      background: #3498db;
       color: white;
+      border: none;
       border-radius: 10px;
-      margin-left: 10px;
       cursor: pointer;
     }
 
-    #gameInfo {
-      margin: 10px 0;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      font-size: 1em;
-      color: #444;
-    }
-
-    #puzzleContainer {
-      margin: auto;
+    #puzzle {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
       gap: 2px;
-      max-width: 90vmin;
-      max-height: 90vmin;
-      background: #ccc;
+      margin: 20px 0;
     }
 
-    .piece {
+    .tile {
       width: 100%;
-      aspect-ratio: 1/1;
-      background-size: 300%;
-      background-repeat: no-repeat;
+      aspect-ratio: 1 / 1;
+      background-size: 300% 300%;
+      border: 1px solid #ccc;
       cursor: pointer;
-      border-radius: 6px;
       transition: transform 0.2s;
     }
 
-    .piece:hover {
+    .tile:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 5px #007BFF;
+      box-shadow: 0 0 10px #aaa;
+    }
+
+    #controls {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 10px;
+    }
+
+    #controls span {
+      font-size: 1.1em;
     }
 
     #buttons {
-      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     button {
-      margin: 5px;
-      padding: 10px 20px;
+      padding: 8px 14px;
       font-size: 1em;
-      border-radius: 10px;
       border: none;
+      border-radius: 10px;
       cursor: pointer;
     }
+
+    #replay { background: #2ecc71; color: white; }
+    #next { background: gray; color: white; }
 
     #message {
       font-size: 1.5em;
       color: green;
-      animation: bounce 1s infinite;
-      margin-top: 10px;
+      font-weight: bold;
+      animation: pop 1s infinite alternate;
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.2); }
     }
 
     #pub {
-      margin-top: 15px;
-    }
-
-    #pub img {
-      max-width: 100%;
-      height: auto;
+      margin-top: 10px;
+      max-width: 90%;
     }
   </style>
 </head>
 <body>
-  <h1>🧩 Puzzle : Niveau 1 🧠</h1>
+  <h1><span class="red">🧩</span> Puzzle : Niveau 1 <span class="blue">🧩</span></h1>
 
-  <div id="playerInput">
+  <div id="start-screen">
     <input type="text" id="playerName" placeholder="Entrez votre nom" />
     <button onclick="startGame()">Commencer</button>
   </div>
 
-  <div id="gameArea" style="display:none;">
-    <div id="gameInfo">
-      <div id="playerDisplay"></div>
-      <div id="scoreDisplay">Score: 0</div>
-      <div id="moveCounter">Coups: 0</div>
-      <div id="timer">⏱️ 0s</div>
+  <div id="game-screen" style="display:none;">
+    <div id="controls">
+      <span id="score">Score: 0</span>
+      <span id="moves">Coups: 0</span>
+      <span id="timer">🕒 0s</span>
     </div>
-
-    <div id="puzzleContainer"></div>
-
-    <div id="message"></div>
-
+    <div id="puzzle" style="grid-template-columns: repeat(3, 1fr);"></div>
     <div id="buttons">
-      <button onclick="resetGame()">Rejouer</button>
-      <button id="nextLevel" onclick="nextLevel()" disabled>Niveau 2</button>
+      <button id="replay" onclick="resetGame()">Rejouer</button>
+      <button id="next" disabled onclick="alert('Niveau 2 bientôt disponible')">Niveau 2</button>
     </div>
-
-    <div id="pub"><img src="Puzzle/Files/PUB.png" alt="PUB" /></div>
+    <div id="message"></div>
+    <img id="pub" src="Puzzle/Files/PUB.png" alt="PUB" />
   </div>
 
   <audio id="clickSound" src="Puzzle/Files/click.mp3"></audio>
@@ -145,112 +145,97 @@
 
   <script>
     const puzzleSize = 3;
-    let pieces = [], empty = null;
-    let moveCount = 0;
-    let score = 0;
-    let timer = 0, timerInterval;
-    const image = "Puzzle/Files/cat.jpg";
+    let tiles = [], emptyIndex, moves = 0, score = 0, timer = 0, timerInterval;
 
     function startGame() {
-      const name = document.getElementById("playerName").value.trim();
-      if (!name) return alert("Entrez un nom !");
-      document.getElementById("playerDisplay").textContent = "👤 " + name;
-      document.getElementById("playerInput").style.display = "none";
-      document.getElementById("gameArea").style.display = "block";
-      initPuzzle();
-      timer = 0;
+      const name = document.getElementById('playerName').value.trim();
+      if (!name) return alert("Veuillez entrer votre nom");
+      document.getElementById('start-screen').style.display = "none";
+      document.getElementById('game-screen').style.display = "block";
+      resetGame();
       timerInterval = setInterval(() => {
         timer++;
-        document.getElementById("timer").textContent = "⏱️ " + timer + "s";
+        document.getElementById('timer').textContent = "🕒 " + timer + "s";
       }, 1000);
-    }
-
-    function initPuzzle() {
-      const container = document.getElementById("puzzleContainer");
-      container.innerHTML = "";
-      pieces = [];
-
-      for (let i = 0; i < puzzleSize * puzzleSize; i++) {
-        pieces.push(i);
-      }
-
-      do {
-        shuffleArray(pieces);
-      } while (pieces.some((val, idx) => val === idx));
-
-      pieces.forEach((val, idx) => {
-        const x = val % puzzleSize;
-        const y = Math.floor(val / puzzleSize);
-        const div = document.createElement("div");
-        div.className = "piece";
-        div.style.backgroundImage = `url(${image})`;
-        div.style.backgroundPosition = `${(x * 100) / (puzzleSize - 1)}% ${(y * 100) / (puzzleSize - 1)}%`;
-        div.dataset.index = idx;
-        div.dataset.value = val;
-        div.onclick = () => handlePieceClick(idx);
-        container.appendChild(div);
-      });
-
-      moveCount = 0;
-      score = 0;
-      updateScore();
-      document.getElementById("message").textContent = "";
-      document.getElementById("nextLevel").disabled = true;
-    }
-
-    function handlePieceClick(idx) {
-      document.getElementById("clickSound").play();
-
-      if (empty === null) {
-        empty = idx;
-        return;
-      }
-
-      const container = document.getElementById("puzzleContainer");
-      const piecesDom = container.children;
-      [piecesDom[idx].style.backgroundImage, piecesDom[empty].style.backgroundImage] =
-        [piecesDom[empty].style.backgroundImage, piecesDom[idx].style.backgroundImage];
-      [piecesDom[idx].style.backgroundPosition, piecesDom[empty].style.backgroundPosition] =
-        [piecesDom[empty].style.backgroundPosition, piecesDom[idx].style.backgroundPosition];
-      [pieces[idx], pieces[empty]] = [pieces[empty], pieces[idx]];
-
-      document.getElementById("swapSound").play();
-      moveCount++;
-      updateScore();
-      empty = null;
-
-      checkWin();
-    }
-
-    function updateScore() {
-      document.getElementById("moveCounter").textContent = "Coups: " + moveCount;
-      document.getElementById("scoreDisplay").textContent = "Score: " + Math.max(0, 100 - moveCount * 2);
-    }
-
-    function checkWin() {
-      const isSolved = pieces.every((val, idx) => val === idx);
-      if (isSolved) {
-        clearInterval(timerInterval);
-        document.getElementById("message").textContent = "🎉 Bravo, Puzzle Terminé ! 🎉";
-        document.getElementById("winSound").play();
-        document.getElementById("nextLevel").disabled = false;
-      }
     }
 
     function resetGame() {
       clearInterval(timerInterval);
-      empty = null;
-      startGame();
+      timer = 0;
+      moves = 0;
+      score = 0;
+      document.getElementById('timer').textContent = "🕒 0s";
+      document.getElementById('score').textContent = "Score: 0";
+      document.getElementById('moves').textContent = "Coups: 0";
+      document.getElementById('message').textContent = "";
+      document.getElementById('next').disabled = true;
+      generatePuzzle();
+      timerInterval = setInterval(() => {
+        timer++;
+        document.getElementById('timer').textContent = "🕒 " + timer + "s";
+      }, 1000);
     }
 
-    function nextLevel() {
-      alert("Niveau 2 bientôt disponible !");
+    function generatePuzzle() {
+      const puzzle = document.getElementById('puzzle');
+      puzzle.innerHTML = "";
+      tiles = Array.from({length: puzzleSize * puzzleSize}, (_, i) => i);
+      do {
+        tiles.sort(() => Math.random() - 0.5);
+      } while (tiles.some((val, idx) => val === idx));
+
+      tiles.forEach((val, idx) => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.style.backgroundImage = 'url("Puzzle/Files/cat.jpg")';
+        const x = val % puzzleSize;
+        const y = Math.floor(val / puzzleSize);
+        tile.style.backgroundPosition = `${-x * 100}% ${-y * 100}%`;
+        tile.dataset.index = idx;
+        tile.onclick = () => selectTile(idx);
+        puzzle.appendChild(tile);
+      });
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    let selected = null;
+
+    function selectTile(index) {
+      document.getElementById('clickSound').play();
+      if (selected === null) {
+        selected = index;
+      } else {
+        if (selected !== index) {
+          swapTiles(selected, index);
+          document.getElementById('swapSound').play();
+          moves++;
+          document.getElementById('moves').textContent = "Coups: " + moves;
+        }
+        selected = null;
+      }
+    }
+
+    function swapTiles(i, j) {
+      const tilesDOM = document.querySelectorAll('.tile');
+      const temp = tiles[i].valueOf();
+      tiles[i] = tiles[j];
+      tiles[j] = temp;
+
+      const tempPos = tilesDOM[i].style.backgroundPosition;
+      tilesDOM[i].style.backgroundPosition = tilesDOM[j].style.backgroundPosition;
+      tilesDOM[j].style.backgroundPosition = tempPos;
+
+      checkWin();
+    }
+
+    function checkWin() {
+      const won = tiles.every((val, idx) => val === idx);
+      if (won) {
+        clearInterval(timerInterval);
+        document.getElementById('message').textContent = "🎉 Bravo ! Puzzle terminé 🎉";
+        document.getElementById('winSound').play();
+        score = 1000 - (moves * 5 + timer * 2);
+        document.getElementById('score').textContent = "Score: " + Math.max(score, 0);
+        document.getElementById('next').disabled = false;
       }
     }
   </script>
