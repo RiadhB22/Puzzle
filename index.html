@@ -1,40 +1,229 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>🧩 Puzzle : Niveau 1 🧩</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧩 Puzzle : Niveau 1</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header, .info, .pub, .controls {
+      text-align: center;
+      margin: 10px;
+    }
+    #startScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20vh;
+    }
+    #gameContainer {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .grid {
+      display: grid;
+      margin: 10px auto;
+      gap: 2px;
+      touch-action: manipulation;
+    }
+    .piece {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background-size: 300% 300%;
+      border: 1px solid #ccc;
+    }
+    .controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    .controls button:disabled {
+      background-color: #aaa;
+    }
+    .victory {
+      font-size: 24px;
+      font-weight: bold;
+      color: green;
+      animation: pop 1s ease-in-out infinite alternate;
+    }
+    @keyframes pop {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+    .pub img {
+      width: 90%;
+      max-width: 400px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🧩 Puzzle : Niveau 1 🧩</h1>
-    
-    <div id="start-screen">
-      <input type="text" id="player-name" placeholder="Entrez votre nom">
-      <button id="start-button">Commencer</button>
-    </div>
 
-    <div id="game-ui" class="hidden">
-      <div class="info-bar">
-        👤 Joueur : <span id="player-display">-</span> |
-        🧠 Score : <span id="score">0</span> |
-        🔁 Coups : <span id="moves">0</span> |
-        ⏱️ <span id="timer">00:00</span>
-      </div>
+  <header><h2>🧩 Puzzle : Niveau 1 🧩</h2></header>
 
-      <div id="puzzle"></div>
-
-      <div class="buttons">
-        <button id="replay-button">🔁 Rejouer</button>
-        <button id="next-button" disabled>➡️ Niveau 2</button>
-      </div>
-
-      <img id="pub" src="Files/PUB.png" alt="Pub">
-    </div>
-
-    <div id="win-message" class="hidden">🎉 Bravo ! Puzzle réussi 🎉</div>
+  <div id="startScreen">
+    <label for="playerName">Entrez votre nom :</label>
+    <input type="text" id="playerName" placeholder="Nom du joueur">
+    <button onclick="startGame()">Commencer</button>
   </div>
 
-  <script src="script.js"></script>
+  <div id="gameContainer">
+    <div class="info">
+      👤 Joueur : <span id="nameDisplay">-</span> |
+      🧠 Score : <span id="score">0</span> |
+      🔁 Coups : <span id="moves">0</span> |
+      ⏱️ <span id="timer">00:00</span>
+    </div>
+
+    <div id="puzzle" class="grid"></div>
+
+    <div class="controls">
+      <button onclick="resetGame()">Rejouer</button>
+      <button id="nextLevelBtn" disabled>Niveau 2</button>
+    </div>
+
+    <div class="pub">
+      <img src="Files/PUB.png" alt="Publicité">
+    </div>
+  </div>
+
+  <audio id="clickSound" src="Files/click.mp3"></audio>
+  <audio id="swapSound" src="Files/swap.mp3"></audio>
+  <audio id="winSound" src="Files/win.mp3"></audio>
+
+  <script>
+    const puzzleSize = 3;
+    let pieces = [];
+    let emptyIndex = -1;
+    let firstClick = null;
+    let moveCount = 0;
+    let score = 0;
+    let timer;
+    let seconds = 0;
+
+    const puzzle = document.getElementById("puzzle");
+    const nameDisplay = document.getElementById("nameDisplay");
+    const scoreDisplay = document.getElementById("score");
+    const movesDisplay = document.getElementById("moves");
+    const timerDisplay = document.getElementById("timer");
+    const nextLevelBtn = document.getElementById("nextLevelBtn");
+
+    function startGame() {
+      const name = document.getElementById("playerName").value.trim();
+      if (name === "") return alert("Entrez votre nom !");
+      nameDisplay.textContent = name;
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("gameContainer").style.display = "flex";
+      initGame();
+    }
+
+    function initGame() {
+      puzzle.innerHTML = "";
+      pieces = [];
+      moveCount = 0;
+      score = 0;
+      seconds = 0;
+      nextLevelBtn.disabled = true;
+      updateDisplays();
+      clearInterval(timer);
+      timer = setInterval(updateTimer, 1000);
+
+      puzzle.style.gridTemplateColumns = `repeat(${puzzleSize}, 1fr)`;
+      puzzle.style.width = "90vw";
+      puzzle.style.maxWidth = "500px";
+
+      const indices = [...Array(puzzleSize * puzzleSize).keys()];
+      let shuffled;
+      do {
+        shuffled = indices.slice().sort(() => Math.random() - 0.5);
+      } while (shuffled.some((val, i) => val === i));
+
+      shuffled.forEach((index, i) => {
+        const x = index % puzzleSize;
+        const y = Math.floor(index / puzzleSize);
+        const div = document.createElement("div");
+        div.className = "piece";
+        div.style.backgroundImage = "url('Files/cat.jpg')";
+        div.style.backgroundPosition = `${(x * 100) / (puzzleSize - 1)}% ${(y * 100) / (puzzleSize - 1)}%`;
+        div.dataset.correct = index;
+        div.dataset.current = i;
+        div.onclick = () => handleClick(i);
+        pieces.push(div);
+        puzzle.appendChild(div);
+      });
+    }
+
+    function updateDisplays() {
+      scoreDisplay.textContent = score;
+      movesDisplay.textContent = moveCount;
+    }
+
+    function updateTimer() {
+      seconds++;
+      const min = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const sec = String(seconds % 60).padStart(2, "0");
+      timerDisplay.textContent = `${min}:${sec}`;
+    }
+
+    function handleClick(i) {
+      document.getElementById("clickSound").play();
+      if (firstClick === null) {
+        firstClick = i;
+      } else if (firstClick !== i) {
+        swapPieces(firstClick, i);
+        firstClick = null;
+      }
+    }
+
+    function swapPieces(i1, i2) {
+      const sound = document.getElementById("swapSound");
+      const temp = pieces[i1].dataset.current;
+      pieces[i1].dataset.current = pieces[i2].dataset.current;
+      pieces[i2].dataset.current = temp;
+
+      [pieces[i1].style.backgroundPosition, pieces[i2].style.backgroundPosition] =
+        [pieces[i2].style.backgroundPosition, pieces[i1].style.backgroundPosition];
+
+      puzzle.insertBefore(pieces[i1], pieces[i2]);
+      puzzle.insertBefore(pieces[i2], pieces[i1]);
+
+      moveCount++;
+      score += 10;
+      updateDisplays();
+      sound.play();
+
+      checkVictory();
+    }
+
+    function checkVictory() {
+      const win = pieces.every((p, i) => +p.dataset.correct === i);
+      if (win) {
+        clearInterval(timer);
+        document.getElementById("winSound").play();
+        const msg = document.createElement("div");
+        msg.className = "victory";
+        msg.textContent = "🎉 Bravo ! Puzzle réussi 🎉";
+        puzzle.after(msg);
+        nextLevelBtn.disabled = false;
+      }
+    }
+
+    function resetGame() {
+      document.location.reload();
+    }
+  </script>
 </body>
 </html>
