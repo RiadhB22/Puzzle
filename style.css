@@ -1,93 +1,88 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
 
-body {
-    background: #f7f7f7;
-    text-align: center;
-    padding: 1rem;
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 10px;
 }
 
 h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+  font-size: 24px;
+  margin-bottom: 10px;
 }
 
-input {
-    padding: 0.5rem;
-    font-size: 1rem;
-    margin-bottom: 1rem;
+input, button {
+  padding: 10px;
+  font-size: 16px;
+  margin: 5px;
 }
 
-button {
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-    margin: 0.5rem;
-    border: none;
-    border-radius: 10px;
-    background-color: #00aaff;
-    color: white;
-    cursor: pointer;
+#puzzle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin: 10px 0;
 }
 
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+.piece {
+  width: 100%;
+  aspect-ratio: 1;
+  background-size: 300% 300%;
+  border: 1px solid #ccc;
+  cursor: pointer;
 }
 
-.top-bar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-}
-
-.puzzle {
-    display: grid;
-    gap: 3px;
-    max-width: 95vw;
-    max-height: 95vw;
-    margin: 0 auto;
-    aspect-ratio: 1 / 1;
-}
-
-.tile {
-    background-size: 300% 300%;
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-
-.tile.empty {
-    background: #e0e0e0;
-}
-
-#message {
-    margin: 1rem auto;
-    font-size: 2rem;
-    color: green;
-    animation: pop 0.6s ease;
-    display: none;
-}
-
-@keyframes pop {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+.info-bar {
+  margin: 10px 0;
+  font-weight: bold;
 }
 
 .buttons {
-    margin-top: 1rem;
+  margin-top: 10px;
 }
 
-.pub {
-    margin-top: 1rem;
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
+#pub {
+  width: 100%;
+  max-height: 100px;
+  margin-top: 10px;
+}
+
+#win-message {
+  font-size: 24px;
+  color: green;
+  margin-top: 20px;
+  animation: flash 1s infinite alternate;
+}
+
+@keyframes flash {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(1.2); opacity: 0.5; }
+}
+
+.hidden {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 5px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  #puzzle {
+    gap: 1px;
+  }
+
+  .piece {
+    border: none;
+  }
 }
