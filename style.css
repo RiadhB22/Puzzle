@@ -1,14 +1,14 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+  font-family: sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #f0f0f0;
   text-align: center;
 }
 
 .container {
   max-width: 600px;
-  margin: auto;
+  margin: 0 auto;
   padding: 10px;
 }
 
@@ -17,72 +17,89 @@ h1 {
   margin-bottom: 10px;
 }
 
-input, button {
-  padding: 10px;
-  font-size: 16px;
-  margin: 5px;
+.emoji1 {
+  color: #ff6600;
+}
+.emoji2 {
+  color: #0099cc;
 }
 
-#puzzle {
+.player-input {
+  margin: 20px 0;
+}
+.player-input input {
+  padding: 10px;
+  font-size: 16px;
+  width: 70%;
+}
+.player-input button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.top-info {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.puzzle-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
-  margin: 10px 0;
+  max-width: 100%;
+  margin: 10px auto;
+  width: 300px;
+  height: 300px;
 }
 
-.piece {
-  width: 100%;
-  aspect-ratio: 1;
-  background-size: 300% 300%;
+.tile {
+  width: 100px;
+  height: 100px;
+  background-size: 300px 300px;
   border: 1px solid #ccc;
   cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.info-bar {
+.tile:hover {
+  transform: scale(1.05);
+  border-color: #666;
+}
+
+.selected {
+  border: 2px solid red;
+}
+
+.bottom-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   margin: 10px 0;
-  font-weight: bold;
+  font-size: 18px;
 }
 
-.buttons {
+.message {
   margin-top: 10px;
-}
-
-#pub {
-  width: 100%;
-  max-height: 100px;
-  margin-top: 10px;
-}
-
-#win-message {
-  font-size: 24px;
+  font-size: 20px;
   color: green;
-  margin-top: 20px;
-  animation: flash 1s infinite alternate;
-}
-
-@keyframes flash {
-  from { transform: scale(1); opacity: 1; }
-  to { transform: scale(1.2); opacity: 0.5; }
-}
-
-.hidden {
+  font-weight: bold;
   display: none;
 }
+.message.show {
+  display: block;
+  animation: pop 1s ease-in-out;
+}
+@keyframes pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
 
-@media screen and (max-width: 600px) {
-  .container {
-    padding: 5px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  #puzzle {
-    gap: 1px;
-  }
-
-  .piece {
-    border: none;
-  }
+.pub-container {
+  margin-top: 20px;
+}
+.pub-image {
+  max-width: 100%;
+  height: auto;
 }
