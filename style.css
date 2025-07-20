@@ -1,93 +1,87 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f0f0f0;
+  background: #f4f4f4;
   text-align: center;
 }
 
-header h1 {
-  background: #fff;
-  padding: 15px;
-  font-size: 1.5rem;
-}
-
-.emoji1 {
-  color: #0074D9;
-}
-.emoji2 {
-  color: #FF4136;
-}
-
-#startScreen {
-  margin-top: 20vh;
-}
-
-#startScreen input {
+.container {
   padding: 10px;
-  font-size: 1rem;
-  width: 200px;
-  margin: 10px;
 }
 
-#startScreen button {
-  padding: 10px 20px;
-  font-size: 1rem;
-}
-
-#infos {
+h1 {
+  font-size: 1.8em;
   margin: 10px 0;
-  font-weight: bold;
 }
 
-#puzzleContainer {
+.emoji.red {
+  color: red;
+}
+.emoji.blue {
+  color: blue;
+}
+
+#player-input {
+  margin-top: 20px;
+}
+
+#player-input input {
+  padding: 10px;
+  font-size: 16px;
+  width: 200px;
+}
+
+#player-input button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.hidden {
+  display: none;
+}
+
+.top-info, .controls {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  font-size: 1.1em;
+}
+
+#puzzle {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  max-width: 90vw;
-  max-height: 90vw;
   margin: auto;
+  max-width: 90vmin;
+  max-height: 90vmin;
+  aspect-ratio: 1;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2px;
 }
 
 .piece {
-  width: 100%;
-  aspect-ratio: 1 / 1;
   background-size: 300%;
-  border: 1px solid #ccc;
+  background-repeat: no-repeat;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 .piece:hover {
   transform: scale(1.05);
+  border: 2px solid #2196f3;
 }
 
 .piece.selected {
-  outline: 3px solid #f00;
+  outline: 3px solid orange;
 }
 
-.buttons {
-  margin: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
+button {
+  padding: 10px 20px;
+  font-size: 1em;
 }
 
-#winMessage {
-  font-size: 2rem;
-  color: green;
-  animation: pulse 1s infinite;
-  display: none;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
-.pub {
-  width: 100%;
-  max-width: 400px;
+.pub-image {
   margin-top: 20px;
+  width: 100%;
+  max-width: 500px;
 }
