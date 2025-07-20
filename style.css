@@ -1,87 +1,114 @@
-body {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
-  text-align: center;
+  background: #f2f2f2;
+  overflow: hidden;
 }
 
 .container {
+  text-align: center;
   padding: 10px;
 }
 
 h1 {
-  font-size: 1.8em;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.emoji.red { color: red; }
+.emoji.blue { color: blue; }
+
+.player-entry {
   margin: 10px 0;
 }
 
-.emoji.red {
-  color: red;
-}
-.emoji.blue {
-  color: blue;
-}
-
-#player-input {
-  margin-top: 20px;
-}
-
-#player-input input {
-  padding: 10px;
-  font-size: 16px;
-  width: 200px;
-}
-
-#player-input button {
-  padding: 10px 20px;
+.player-entry input {
+  padding: 8px;
   font-size: 16px;
 }
 
-.hidden {
-  display: none;
+.player-entry button {
+  padding: 8px 16px;
+  margin-left: 5px;
+  font-size: 16px;
 }
 
-.top-info, .controls {
-  margin: 15px 0;
+.game-info {
   display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  font-size: 1.1em;
+  flex-direction: column;
+  align-items: center;
 }
 
-#puzzle {
+.top-bar {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.puzzle-container {
   display: grid;
-  margin: auto;
-  max-width: 90vmin;
-  max-height: 90vmin;
-  aspect-ratio: 1;
-  grid-template-columns: repeat(3, 1fr);
   gap: 2px;
+  margin: 0 auto;
+  width: 90vw;
+  height: 90vw;
+  max-width: 500px;
+  max-height: 500px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.piece {
-  background-size: 300%;
-  background-repeat: no-repeat;
+.puzzle-piece {
+  background-color: #ccc;
+  border: 1px solid #999;
   cursor: pointer;
   transition: transform 0.2s;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
-.piece:hover {
+.puzzle-piece:hover {
   transform: scale(1.05);
-  border: 2px solid #2196f3;
 }
 
-.piece.selected {
-  outline: 3px solid orange;
+.selected {
+  border: 3px solid green;
+}
+
+.bottom-bar {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  align-items: center;
 }
 
 button {
-  padding: 10px 20px;
-  font-size: 1em;
+  padding: 10px;
+  font-size: 16px;
 }
 
-.pub-image {
-  margin-top: 20px;
+.victory-message {
+  font-size: 22px;
+  color: green;
+  margin-top: 10px;
+  display: none;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.pub {
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
+  margin-top: 15px;
 }
