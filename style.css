@@ -1,101 +1,100 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  background: #f5f5f5;
+  background-color: #f7f7f7;
   text-align: center;
 }
 
-.container {
-  max-width: 500px;
+h1 {
+  margin-top: 10px;
+  font-size: 1.8em;
+}
+
+.puzzle-icon.red {
+  color: red;
+}
+
+.puzzle-icon.blue {
+  color: blue;
+}
+
+#game-container {
+  max-width: 600px;
   margin: auto;
   padding: 10px;
 }
 
-h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.blue {
-  color: #2196f3;
-}
-
-.red {
-  color: #e91e63;
-}
-
-.start-screen {
+#name-section {
   margin-top: 20px;
 }
 
-.start-screen input {
+#name-section input {
   padding: 8px;
-  width: 60%;
-  font-size: 16px;
+  font-size: 1em;
 }
 
-.start-screen button {
-  padding: 8px 12px;
-  font-size: 16px;
+#game-ui {
+  margin-top: 20px;
 }
 
-.game-info {
-  margin-top: 10px;
-}
-
-.top-bar {
+.top-bar,
+.bottom-bar {
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
-  margin-bottom: 10px;
+  margin: 10px 0;
+  padding: 0 10px;
 }
 
-.puzzle-grid {
+#puzzle-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  aspect-ratio: 1/1;
   max-width: 100%;
   margin: auto;
-  border: 2px solid #333;
+  gap: 2px;
 }
 
 .piece {
-  width: 100px;
-  height: 100px;
-  border: 1px solid #999;
-  background-size: 300px 300px;
+  background-repeat: no-repeat;
+  background-size: cover;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 .piece:hover {
   transform: scale(1.05);
-  border-color: #000;
+  box-shadow: 0 0 5px #aaa;
 }
 
-.controls {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+.selected {
+  outline: 2px solid #000;
+}
+
+#victory {
+  font-size: 1.5em;
+  color: green;
+  animation: pop 1s infinite alternate;
   margin-top: 10px;
 }
 
-.victory-message {
-  font-size: 22px;
-  color: green;
-  animation: bounce 1s infinite alternate;
+@keyframes pop {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+#pub {
   margin-top: 15px;
+  max-width: 100%;
 }
 
-@keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
+button {
+  padding: 10px 20px;
+  font-size: 1em;
+  margin: 5px;
+  cursor: pointer;
 }
 
-.hidden {
-  display: none;
-}
-
-.pub img {
-  width: 100%;
-  margin-top: 20px;
+input {
+  width: 60%;
+  max-width: 300px;
 }
